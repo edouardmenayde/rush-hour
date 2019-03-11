@@ -27,9 +27,10 @@ Situation Situation::from_file(string filename) {
   bool target = true;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
-    situation.cars.push_back(Car{
+    Car car = {
         line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL, target
-    });
+    };
+    situation.cars.push_back(car);
     target = false; // After the first pass the following cars are not the target
   }
 
