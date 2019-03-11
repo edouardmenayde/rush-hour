@@ -43,7 +43,13 @@ void Situation::print() {
 
   unsigned int size = 6;
 
-  unsigned int map[size][size]{0};
+  unsigned int map[size][size];
+
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      map[i][j] = 0;
+    }
+  }
 
   unsigned int car_number = 1;
 
