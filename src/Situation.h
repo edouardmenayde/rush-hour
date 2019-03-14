@@ -2,17 +2,32 @@
 #define RUSH_HOUR_SITUATION_H
 
 #include <vector>
+#include <array>
 #include "Vector2.h"
 #include "Car.h"
 #include <string>
+#include <ostream>
+#include "Direction.h"
 
 using namespace std;
+
+class Move {
+ public:
+  unsigned int car_index;
+  Direction direction;
+  bool operator==(const Move &rhs) const;
+  bool operator!=(const Move &rhs) const;
+  friend ostream &operator<<(ostream &os, const Move &move1);
+};
+
+const unsigned int SIZE = 6;
 
 /**
  * A parking situation with all the cars in it and the exit.
  */
 class Situation {
  public:
+
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
@@ -23,9 +38,17 @@ class Situation {
    */
   Vector2 exit;
 
+  vector<Move> moves;
+
+  array<array<int, SIZE>, SIZE> parking;
+
   void print();
 
   static Situation from_file(string filename);
+
+  void compute_moves();
+
+  void compute_parking();
 };
 
 #endif //RUSH_HOUR_SITUATION_H

@@ -27,15 +27,15 @@ Situation Situation::from_file(string filename) {
   bool target = true;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
-    Direction direction = horizontal ? HORIZONTAL : VERTICAL;
-    Car car = {
-        line_pos, column_pos, length, direction, target
-    };
-    situation.cars.push_back(car);
+    situation.cars.push_back(Car{
+        line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL, target
+    });
     target = false; // After the first pass the following cars are not the target
   }
 
   file.close();
+
+  situation.compute_parking();
 
   return situation;
 }
@@ -43,41 +43,88 @@ Situation Situation::from_file(string filename) {
 void Situation::print() {
   const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  unsigned int size = 6;
-
-  unsigned int map[size][size];
-
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
-      map[i][j] = 0;
+  for (int i = 0; i < SIZE; i++) {
+    for (int j = 0; j < SIZE; j++) {
+      if (!parking[i][j]) {
+        cout << "  ";
+      } else {
+        cout << alphabet[parking[i][j] - 1] << " ";
+      }
+    }
+    if (i + 1 < SIZE) {
+      cout << endl;
     }
   }
+}
 
-  unsigned int car_number = 1;
-
+void Situation::compute_moves() {
+  unsigned int car_number = 0;
   for (auto &car : cars) {
-    if (car.direction == HORIZONTAL) {
-      for (int i = 0; i < car.length; i++) {
-        map[car.line][car.column + i] = car_number;
+    if (car.plane == VERTICAL) {
+      if (car.line - 1 >= 0) {
+        // We can move UP
+        int new_line = car.line - 1;
+        if (parking[new_line][car.column] == -1) {
+          moves.push_back(Move{car_number, UP});
+        }
+      }
+      if (car.line + car.length < SIZE) {
+        // We can move DOWN
+        int new_line = car.line + car.length;
+        if (parking[new_line][car.column] == -1) {
+          moves.push_back(Move{car_number, DOWN});
+        }
       }
     } else {
-      for (int i = 0; i < car.length; i++) {
-        map[car.line + i][car.column] = car_number;
+      if (car.column - 1 >= 0) {
+        // We can move to the LEFT
+        int new_column = car.column - 1;
+        if (parking[car.line][new_column] == -1) {
+          moves.push_back(Move{car_number, LEFT});
+        }
+      }
+      if (car.column + car.length < SIZE) {
+        // We can move to the RIGHT
+        int new_column = car.column + car.length;
+        if (parking[car.line][new_column] == -1) {
+          moves.push_back(Move{car_number, RIGHT});
+        }
       }
     }
     car_number++;
   }
+}
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
-      if (!map[i][j]) {
-        cout << "  ";
-      } else {
-        cout << alphabet[map[i][j] - 1] << " ";
-      }
-    }
-    if (i + 1 < size) {
-      cout << endl;
+void Situation::compute_parking() {
+  for (int i = 0; i < SIZE; i++) {
+    for (int j = 0; j < SIZE; j++) {
+      parking[i][j] = -1;
     }
   }
+
+  unsigned int car_number = 0;
+
+  for (auto &car : cars) {
+    if (car.plane == HORIZONTAL) {
+      for (int i = 0; i < car.length; i++) {
+        parking[car.line][car.column + i] = car_number;
+      }
+    } else {
+      for (int i = 0; i < car.length; i++) {
+        parking[car.line + i][car.column] = car_number;
+      }
+    }
+    car_number++;
+  }
+}
+bool Move::operator==(const Move &rhs) const {
+  return car_index == rhs.car_index &&
+      direction == rhs.direction;
+}
+bool Move::operator!=(const Move &rhs) const {
+  return !(rhs == *this);
+}
+ostream &operator<<(ostream &os, const Move &move) {
+  os << "(" << move.car_index << ", " << move.direction << ")";
+  return os;
 }

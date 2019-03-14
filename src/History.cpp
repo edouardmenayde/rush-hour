@@ -12,7 +12,7 @@ HistoryNode::HistoryNode(const Situation &s) {
 }
 
 HistoryNode::~HistoryNode() {
-  for (auto &child : childrens) {
+  for (auto &child : children) {
     delete child;
   }
 }

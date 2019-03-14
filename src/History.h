@@ -9,7 +9,7 @@ using namespace std;
 class HistoryNode {
  public:
   Situation situation;
-  vector<HistoryNode *> childrens;
+  vector<HistoryNode *> children;
 
   explicit HistoryNode(const Situation &situation);
 
