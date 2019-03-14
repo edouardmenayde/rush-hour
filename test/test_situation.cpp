@@ -55,9 +55,11 @@ TEST_CASE("Compute parking from a situation") {
 TEST_CASE("Can move a car") {
   Situation test("../test/support/puzzle.txt");
 
-  Situation test2 = test.move(Move{7, RIGHT});
+  auto move = Move{7, RIGHT};
 
-  REQUIRE(test2.cars[7].column == 1);
+  Situation test2 = test.move(move);
+
+  REQUIRE(test2.cars[move.car_index].column == 1);
 }
 
 
