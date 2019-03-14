@@ -27,7 +27,10 @@ const unsigned int SIZE = 6;
  */
 class Situation {
  public:
+  void compute_parking();
+  array<array<int, SIZE>, SIZE> parking{};
 
+  vector<Move> moves;
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
@@ -36,19 +39,18 @@ class Situation {
   /**
    * Represents the exit of the parking in 2D space.
    */
-  Vector2 exit;
+  Vector2 exit{};
 
-  vector<Move> moves;
+  Situation() = default;
+  explicit Situation(string filename);
 
-  array<array<int, SIZE>, SIZE> parking;
+  bool is_solution();
 
   void print();
 
-  static Situation from_file(string filename);
-
   void compute_moves();
 
-  void compute_parking();
+  Situation move(Move move);
 };
 
 #endif //RUSH_HOUR_SITUATION_H
