@@ -12,6 +12,8 @@ class Explorer {
   void explore(vector<HistoryNode *> history_node, int nb_moves);
 
   HistoryNode *solution;
+
+  int state_explored = 0;
 };
 
 #endif //RUSH_HOUR_EXPLORER_H
