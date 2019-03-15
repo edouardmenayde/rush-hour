@@ -9,8 +9,8 @@ enum Plane {
 const unsigned int TARGET_CAR_INDEX = 0;
 
 struct Car {
-  unsigned int line = 0;
-  unsigned int column = 0;
+  int line = 0;
+  int column = 0;
   unsigned int length = 0;
   Plane plane = HORIZONTAL;
 };

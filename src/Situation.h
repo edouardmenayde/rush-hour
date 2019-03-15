@@ -50,7 +50,11 @@ class Situation {
 
   void compute_moves();
 
-  Situation move(Move move);
+    bool operator==(const Situation &rhs) const;
+
+    bool operator!=(const Situation &rhs) const;
+
+    Situation move(Move move);
 };
 
 #endif //RUSH_HOUR_SITUATION_H

@@ -142,6 +142,14 @@ bool Situation::is_solution() {
   return parking[exit.line][exit.column] == TARGET_CAR_INDEX;
 }
 
+bool Situation::operator==(const Situation &rhs) const {
+    return std::equal(std::begin(parking), std::end(parking), std::begin(rhs.parking));
+}
+
+bool Situation::operator!=(const Situation &rhs) const {
+    return !(rhs == *this);
+}
+
 bool Move::operator==(const Move &rhs) const {
   return car_index == rhs.car_index &&
       direction == rhs.direction;

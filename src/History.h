@@ -7,26 +7,31 @@
 using namespace std;
 
 class HistoryNode {
- public:
-  Situation situation;
-  vector<HistoryNode *> children;
+public:
+    Situation situation;
+    vector<HistoryNode *> children;
 
-  explicit HistoryNode(const Situation &situation);
+    explicit HistoryNode(const Situation &situation);
 
-  ~HistoryNode();
+    ~HistoryNode();
 };
 
 /**
  * Represents the space of situation explored.
  */
 class History {
- public:
-  HistoryNode *root = nullptr;
+public:
+    HistoryNode *root = nullptr;
 
-  History() = default;
-  explicit History(const Situation &situation);
+    History() = default;
 
-  ~History();
+    explicit History(const Situation &situation);
+
+    ~History();
+
+    bool exists(const Situation &situation);
+
+    bool exists_aux(const Situation &situation,const HistoryNode *node);
 };
 
 #endif //RUSH_HOUR_HISTORY_H
