@@ -14,10 +14,10 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
   vector<HistoryNode *> nodes;
   nodes.push_back(history.root);
 
-  struct timeval tv1, tv2;
+  struct timeval tv1{}, tv2{};
   int err;
 
-  err = gettimeofday(&tv1, NULL);
+  err = gettimeofday(&tv1, nullptr);
   if (err != 0) {
     perror("gettimeofday");
     exit(EXIT_FAILURE);
@@ -25,11 +25,12 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
 
   explore(nodes, nb_moves);
 
-  err = gettimeofday(&tv2, NULL);
+  err = gettimeofday(&tv2, nullptr);
   if (err != 0) {
     perror("gettimeofday");
     exit(EXIT_FAILURE);
   }
+
   double amount_of_time = timevalsub(&tv1, &tv2);
 
   vector<HistoryNode *> history;
