@@ -31,6 +31,11 @@ HistoryNode::HistoryNode(const Situation &s) {
   situation = s;
 }
 
+HistoryNode::HistoryNode(const Situation &s, HistoryNode *p) {
+  situation = s;
+  parent = p;
+}
+
 HistoryNode::~HistoryNode() {
   for (auto &child : children) {
     delete child;

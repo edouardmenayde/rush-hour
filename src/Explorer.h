@@ -9,7 +9,9 @@ class Explorer {
 
   History history;
 
-  bool explore(HistoryNode *history_node);
+  void explore(vector<HistoryNode*> history_node, int nb_moves);
+
+  vector<HistoryNode*> solutions;
 };
 
 #endif //RUSH_HOUR_EXPLORER_H
