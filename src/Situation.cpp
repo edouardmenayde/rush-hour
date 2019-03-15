@@ -4,6 +4,22 @@
 #include <vector>
 #include "Situation.h"
 
+// Move
+
+bool Move::operator==(const Move &rhs) const {
+  return car_index == rhs.car_index &&
+      direction == rhs.direction;
+}
+bool Move::operator!=(const Move &rhs) const {
+  return !(rhs == *this);
+}
+ostream &operator<<(ostream &os, const Move &move) {
+  os << "(" << move.car_index << ", " << move.direction << ")";
+  return os;
+}
+
+// Situation
+
 Situation::Situation(string filename) {
   ifstream file;
 
@@ -21,7 +37,7 @@ Situation::Situation(string filename) {
 
   exit = Vector2{x_exit, y_exit};
 
-  unsigned int line_pos, column_pos, length;
+  int line_pos, column_pos, length;
   bool horizontal;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
@@ -113,9 +129,7 @@ void Situation::compute_parking() {
   }
 }
 
-Situation Situation::move(Move move) {
-  Situation new_situation;
-
+void Situation::move(Move move, Situation &new_situation) {
   copy(cars.begin(), cars.end(), back_inserter(new_situation.cars));
 
   auto &car = new_situation.cars[move.car_index];
@@ -134,8 +148,6 @@ Situation Situation::move(Move move) {
   new_situation.exit = exit;
 
   new_situation.compute_parking();
-
-  return new_situation;
 }
 
 bool Situation::is_solution() {
@@ -143,21 +155,16 @@ bool Situation::is_solution() {
 }
 
 bool Situation::operator==(const Situation &rhs) const {
-    return std::equal(std::begin(parking), std::end(parking), std::begin(rhs.parking));
+  return std::equal(cars.begin(), cars.end(), rhs.cars.begin());
 }
 
 bool Situation::operator!=(const Situation &rhs) const {
-    return !(rhs == *this);
-}
-
-bool Move::operator==(const Move &rhs) const {
-  return car_index == rhs.car_index &&
-      direction == rhs.direction;
-}
-bool Move::operator!=(const Move &rhs) const {
   return !(rhs == *this);
 }
-ostream &operator<<(ostream &os, const Move &move) {
-  os << "(" << move.car_index << ", " << move.direction << ")";
-  return os;
+Situation &Situation::operator=(const Situation &old_situation) {
+  copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(this->cars));
+  exit = old_situation.exit;
+  compute_parking();
+
+  return *this;
 }

@@ -4,12 +4,12 @@
 #include "History.h"
 
 class Explorer {
-public:
-    explicit Explorer(Situation &root);
+ public:
+  explicit Explorer(Situation &root);
 
-    History history;
+  History history;
 
-    bool explore(HistoryNode *history_node);
+  bool explore(HistoryNode *history_node);
 };
 
 #endif //RUSH_HOUR_EXPLORER_H
