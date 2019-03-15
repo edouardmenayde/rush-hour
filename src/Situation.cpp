@@ -1,8 +1,10 @@
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <vector>
 #include "Situation.h"
 
-Situation Situation::from_file(string filename) {
+Situation::Situation(string filename) {
   ifstream file;
 
   file.open(filename);
@@ -11,33 +13,26 @@ Situation Situation::from_file(string filename) {
     cerr << "Could not read file `" << filename << "`." << endl;
   }
 
-  Situation situation;
-
   string line;
 
   unsigned int x_exit, y_exit;
 
   file >> x_exit >> y_exit; // First line consist of the exit coordinates
 
-  situation.exit = Vector2{x_exit, y_exit};
+  exit = Vector2{x_exit, y_exit};
 
   unsigned int line_pos, column_pos, length;
   bool horizontal;
 
-  bool target = true;
-
   while (file >> line_pos >> column_pos >> length >> horizontal) {
-    situation.cars.push_back(Car{
-        line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL, target
+    cars.push_back(Car{
+        line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL
     });
-    target = false; // After the first pass the following cars are not the target
   }
 
   file.close();
 
-  situation.compute_parking();
-
-  return situation;
+  compute_parking();
 }
 
 void Situation::print() {
@@ -45,10 +40,10 @@ void Situation::print() {
 
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
-      if (!parking[i][j]) {
+      if (parking[i][j] == -1) {
         cout << "  ";
       } else {
-        cout << alphabet[parking[i][j] - 1] << " ";
+        cout << alphabet[parking[i][j]] << " ";
       }
     }
     if (i + 1 < SIZE) {
@@ -117,6 +112,36 @@ void Situation::compute_parking() {
     car_number++;
   }
 }
+
+Situation Situation::move(Move move) {
+  Situation new_situation;
+
+  copy(cars.begin(), cars.end(), back_inserter(new_situation.cars));
+
+  auto &car = new_situation.cars[move.car_index];
+
+  switch (move.direction) {
+    case UP:car.line -= 1;
+      break;
+    case DOWN:car.line += 1;
+      break;
+    case RIGHT:car.column += 1;
+      break;
+    case LEFT:car.column -= 1;
+      break;
+  }
+
+  new_situation.exit = exit;
+
+  new_situation.compute_parking();
+
+  return new_situation;
+}
+
+bool Situation::is_solution() {
+  return parking[exit.line][exit.column] == TARGET_CAR_INDEX;
+}
+
 bool Move::operator==(const Move &rhs) const {
   return car_index == rhs.car_index &&
       direction == rhs.direction;
