@@ -15,6 +15,7 @@ class Move {
  public:
   unsigned int car_index;
   Direction direction;
+  int steps;
   bool operator==(const Move &rhs) const;
   bool operator!=(const Move &rhs) const;
   friend ostream &operator<<(ostream &os, const Move &move1);

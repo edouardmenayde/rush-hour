@@ -14,7 +14,7 @@ bool Move::operator!=(const Move &rhs) const {
   return !(rhs == *this);
 }
 ostream &operator<<(ostream &os, const Move &move) {
-  os << "(" << move.car_index << ", " << move.direction << ")";
+  os << "(" << move.car_index << ", " << move.direction << ", " << move.steps << ")";
   return os;
 }
 
@@ -72,33 +72,61 @@ void Situation::compute_moves() {
   unsigned int car_number = 0;
   for (auto &car : cars) {
     if (car.plane == VERTICAL) {
-      if (car.line - 1 >= 0) {
-        // We can move UP
-        int new_line = car.line - 1;
-        if (parking[new_line][car.column] == -1) {
-          moves.push_back(Move{car_number, UP});
+      for (int i = 1; i < SIZE; i++) {
+        if (car.line - i >= 0) {
+          // We can move UP
+          bool valid_move = true;
+          for (int j = 1; j <= i; j++) {
+            if (parking[car.line - j][car.column] != -1) {
+              valid_move = false;
+            }
+          }
+
+          if (valid_move) {
+            moves.push_back(Move{car_number, UP, i});
+          }
         }
-      }
-      if (car.line + car.length < SIZE) {
-        // We can move DOWN
-        int new_line = car.line + car.length;
-        if (parking[new_line][car.column] == -1) {
-          moves.push_back(Move{car_number, DOWN});
+        if (car.line + car.length + (i - 1) < SIZE) {
+          // We can move DOWN
+          bool valid_move = true;
+          for (int j = 1; j <= i; j++) {
+            if (parking[car.line + car.length + (j - 1)][car.column] != -1) {
+              valid_move = false;
+            }
+          }
+
+          if (valid_move) {
+            moves.push_back(Move{car_number, DOWN, i});
+          }
         }
       }
     } else {
-      if (car.column - 1 >= 0) {
-        // We can move to the LEFT
-        int new_column = car.column - 1;
-        if (parking[car.line][new_column] == -1) {
-          moves.push_back(Move{car_number, LEFT});
+      for (int i = 1; i < SIZE; i++) {
+        if (car.column - i >= 0) {
+          // We can move to the LEFT
+          bool valid_move = true;
+          for (int j = 1; j <= i; j++) {
+            if (parking[car.line][car.column - j] != -1) {
+              valid_move = false;
+            }
+          }
+
+          if (valid_move) {
+            moves.push_back(Move{car_number, LEFT, i});
+          }
         }
-      }
-      if (car.column + car.length < SIZE) {
-        // We can move to the RIGHT
-        int new_column = car.column + car.length;
-        if (parking[car.line][new_column] == -1) {
-          moves.push_back(Move{car_number, RIGHT});
+        if (car.column + car.length + (i - 1) < SIZE) {
+          // We can move to the RIGHT
+          bool valid_move = true;
+          for (int j = 1; j <= i; j++) {
+            if (parking[car.line][car.column + car.length + (j - 1)] != -1) {
+              valid_move = false;
+            }
+          }
+
+          if (valid_move) {
+            moves.push_back(Move{car_number, RIGHT, i});
+          }
         }
       }
     }
@@ -135,13 +163,13 @@ void Situation::move(Move move, Situation &new_situation) {
   auto &car = new_situation.cars[move.car_index];
 
   switch (move.direction) {
-    case UP:car.line -= 1;
+    case UP:car.line -= move.steps;
       break;
-    case DOWN:car.line += 1;
+    case DOWN:car.line += move.steps;
       break;
-    case RIGHT:car.column += 1;
+    case RIGHT:car.column += move.steps;
       break;
-    case LEFT:car.column -= 1;
+    case LEFT:car.column -= move.steps;
       break;
   }
 
