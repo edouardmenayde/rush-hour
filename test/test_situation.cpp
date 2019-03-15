@@ -9,11 +9,15 @@ TEST_CASE("Compute moves from a situation") {
   Situation test("../test/support/puzzle.txt");
 
   vector<Move> expected_moves = {
-      Move{2, DOWN},  // 0 2 3 1
-      Move{4, DOWN},  // 1 3 2 0
-      Move{7, RIGHT}, // 3 0 2 1
-      Move{9, UP},    // 4 3 2 0
-      Move{10, UP},   // 4 4 2 0
+      Move{2, DOWN, 1},  // 0 2 3 1
+      Move{2, DOWN, 2},  // 0 2 3 1
+      Move{4, DOWN, 1},  // 1 3 2 0
+      Move{7, RIGHT, 1}, // 3 0 2 1
+      Move{7, RIGHT, 2}, // 3 0 2 1
+      Move{7, RIGHT, 3}, // 3 0 2 1
+      Move{9, UP, 1},    // 4 3 2 0
+      Move{10, UP, 1},   // 4 4 2 0
+      Move{10, UP, 2},   // 4 4 2 0
   };
 
   test.compute_moves();
@@ -55,7 +59,7 @@ TEST_CASE("Compute parking from a situation") {
 TEST_CASE("Can move a car") {
   Situation test("../test/support/puzzle.txt");
 
-  auto move = Move{7, RIGHT};
+  auto move = Move{7, RIGHT, 1};
 
   Situation test2;
   test.move(move, test2);
