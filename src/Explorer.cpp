@@ -68,7 +68,7 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
         node->situation.move(move, new_situation);
         state_explored++;
 
-        if (!history.exists(new_situation)) {
+        if (!history.exists(new_situation, node)) {
           auto new_history_node = new HistoryNode(new_situation, move, node);
           node->children.push_back(new_history_node);
           unique_state_explored++;
