@@ -10,7 +10,6 @@ double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
 }
 
 Explorer::Explorer(Situation &root) : history(History(root)) {
-  int nb_moves = 0;
   vector<HistoryNode *> nodes;
   nodes.push_back(history.root);
 
@@ -23,7 +22,7 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
     exit(EXIT_FAILURE);
   }
 
-  explore(nodes, nb_moves);
+  explore(nodes);
 
   err = gettimeofday(&tv2, nullptr);
   if (err != 0) {
@@ -33,7 +32,7 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
 
   double amount_of_time = timevalsub(&tv1, &tv2);
 
-  vector<HistoryNode *> history;
+  vector<HistoryNode *> history(0);
 
   HistoryNode *current_node = solution;
 
@@ -44,8 +43,8 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
 
   cout << "Found a solution :" << endl
        << "- in " << amount_of_time << "s" << endl
-       << "- exploring " << state_explored << " states " << endl
-       << "- in " << history.size() - 1 << " moves" << endl << endl;
+       << "- exploring " << state_explored << " states (" << unique_state_explored << " uniques)" << endl
+       << "- in " << static_cast<int>(history.size() - 1) << " moves" << endl << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
     history[j]->situation.print();
@@ -54,7 +53,7 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
   }
 }
 
-void Explorer::explore(vector<HistoryNode *> nodes, int nb_moves) {
+void Explorer::explore(vector<HistoryNode *> nodes) {
   vector<HistoryNode *> new_nodes;
 
   for (auto &node : nodes) {
@@ -64,21 +63,21 @@ void Explorer::explore(vector<HistoryNode *> nodes, int nb_moves) {
       node->situation.move(move, new_situation);
       state_explored++;
 
-      if (new_situation.is_solution()) {
+      if (!history.exists(new_situation)) {
         auto new_history_node = new HistoryNode(new_situation, node);
         node->children.push_back(new_history_node);
-        solution = new_history_node;
-        return;
-      } else if (!history.exists(new_situation)) {
-        auto new_history_node = new HistoryNode(new_situation, node);
-        node->children.push_back(new_history_node);
-
+        unique_state_explored++;
         new_nodes.push_back(new_history_node);
+
+        if (new_situation.is_solution()) {
+          solution = new_history_node;
+          return;
+        }
       }
     }
   }
 
   if (!new_nodes.empty()) {
-    explore(new_nodes, nb_moves + 1);
+    explore(new_nodes);
   }
 }
