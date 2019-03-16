@@ -61,8 +61,7 @@ TEST_CASE("Can move a car") {
 
   auto move = Move{7, RIGHT, 1};
 
-  Situation test2;
-  test.move(move, test2);
+  Situation test2(test, move);
 
   REQUIRE(test2.cars[move.car_index].column == 1);
 }
