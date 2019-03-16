@@ -46,7 +46,8 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
        << "- in " << termcolor::red << amount_of_time << "s" << termcolor::reset << endl
        << "- exploring " << termcolor::red << state_explored << termcolor::reset << " states (" << unique_state_explored
        << " uniques)" << endl
-       << "- in " << termcolor::red << static_cast<int>(history.size() - 1) << termcolor::reset << " moves" << endl << endl;
+       << "- in " << termcolor::red << static_cast<int>(history.size() - 1) << termcolor::reset << " moves" << endl
+       << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
     history[j]->situation.print(history[j]->move);
@@ -56,30 +57,35 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
 }
 
 void Explorer::explore(vector<HistoryNode *> nodes) {
-  vector<HistoryNode *> new_nodes;
+  bool exploring = true;
 
-  for (auto &node : nodes) {
-    node->situation.compute_moves();
-    for (auto &move : node->situation.moves) {
-      Situation new_situation;
-      node->situation.move(move, new_situation);
-      state_explored++;
+  while (exploring) {
+    vector<HistoryNode *> new_nodes;
+    for (auto &node : nodes) {
+      node->situation.compute_moves();
+      for (auto &move : node->situation.moves) {
+        Situation new_situation;
+        node->situation.move(move, new_situation);
+        state_explored++;
 
-      if (!history.exists(new_situation)) {
-        auto new_history_node = new HistoryNode(new_situation, move, node);
-        node->children.push_back(new_history_node);
-        unique_state_explored++;
-        new_nodes.push_back(new_history_node);
+        if (!history.exists(new_situation)) {
+          auto new_history_node = new HistoryNode(new_situation, move, node);
+          node->children.push_back(new_history_node);
+          unique_state_explored++;
 
-        if (new_situation.is_solution()) {
-          solution = new_history_node;
-          return;
+          if (new_situation.is_solution()) {
+            solution = new_history_node;
+            return;
+          } else {
+            new_nodes.push_back(new_history_node);
+          }
         }
       }
     }
-  }
 
-  if (!new_nodes.empty()) {
-    explore(new_nodes);
+    nodes.erase(nodes.begin(), nodes.end());
+    copy(new_nodes.begin(), new_nodes.end(), back_inserter(nodes));
+
+    exploring = !new_nodes.empty();
   }
 }
