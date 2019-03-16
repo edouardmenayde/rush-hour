@@ -183,10 +183,10 @@ void Situation::compute_parking() {
   }
 }
 
-void Situation::move(Move move, Situation &new_situation) {
-  copy(cars.begin(), cars.end(), back_inserter(new_situation.cars));
+Situation::Situation(const Situation &old_situation, const Move &move) {
+  copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(cars));
 
-  auto &car = new_situation.cars[move.car_index];
+  auto &car = cars[move.car_index];
 
   switch (move.direction) {
     case UP:car.line -= move.steps;
@@ -197,11 +197,13 @@ void Situation::move(Move move, Situation &new_situation) {
       break;
     case LEFT:car.column -= move.steps;
       break;
+    default:
+      perror("Unrecognized move");
   }
 
-  new_situation.exit = exit;
+  exit = old_situation.exit;
 
-  new_situation.compute_parking();
+  compute_parking();
 }
 
 bool Situation::is_solution() {

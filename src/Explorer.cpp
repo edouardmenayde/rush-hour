@@ -64,8 +64,7 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
     for (auto &node : nodes) {
       node->situation.compute_moves();
       for (auto &move : node->situation.moves) {
-        Situation new_situation;
-        node->situation.move(move, new_situation);
+        Situation new_situation(node->situation, move);
         state_explored++;
 
         if (!history.exists(new_situation, node)) {
