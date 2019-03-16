@@ -10,8 +10,10 @@ class HistoryNode {
  public:
   Situation situation;
   vector<HistoryNode *> children;
+  HistoryNode *parent = nullptr;
 
   explicit HistoryNode(const Situation &situation);
+  explicit HistoryNode(const Situation &situation, HistoryNode *parent);
 
   ~HistoryNode();
 };
@@ -23,10 +25,13 @@ class History {
  public:
   HistoryNode *root = nullptr;
 
-  History() = default;
   explicit History(const Situation &situation);
 
   ~History();
+
+  bool exists(const Situation &situation);
+
+  bool exists_aux(const Situation &situation, const HistoryNode *node);
 };
 
 #endif //RUSH_HOUR_HISTORY_H

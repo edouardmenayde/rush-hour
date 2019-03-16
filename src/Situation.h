@@ -15,6 +15,7 @@ class Move {
  public:
   unsigned int car_index;
   Direction direction;
+  int steps;
   bool operator==(const Move &rhs) const;
   bool operator!=(const Move &rhs) const;
   friend ostream &operator<<(ostream &os, const Move &move1);
@@ -30,11 +31,11 @@ class Situation {
   void compute_parking();
   array<array<int, SIZE>, SIZE> parking{};
 
-  vector<Move> moves;
+  vector<Move> moves{};
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
-  std::vector<Car> cars;
+  std::vector<Car> cars{};
 
   /**
    * Represents the exit of the parking in 2D space.
@@ -50,7 +51,13 @@ class Situation {
 
   void compute_moves();
 
-  Situation move(Move move);
+  bool operator==(const Situation &rhs) const;
+
+  bool operator!=(const Situation &rhs) const;
+
+  Situation &operator=(const Situation &old_situation);
+
+  void move(Move move, Situation &new_situation);
 };
 
 #endif //RUSH_HOUR_SITUATION_H
