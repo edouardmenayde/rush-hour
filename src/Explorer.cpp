@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Explorer.h"
 #include <sys/time.h>
+#include "deps/termcolor.hpp"
 
 double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
   double res = 0;
@@ -42,12 +43,13 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
   }
 
   cout << "Found a solution :" << endl
-       << "- in " << amount_of_time << "s" << endl
-       << "- exploring " << state_explored << " states (" << unique_state_explored << " uniques)" << endl
-       << "- in " << static_cast<int>(history.size() - 1) << " moves" << endl << endl;
+       << "- in " << termcolor::red << amount_of_time << "s" << termcolor::reset << endl
+       << "- exploring " << termcolor::red << state_explored << termcolor::reset << " states (" << unique_state_explored
+       << " uniques)" << endl
+       << "- in " << termcolor::red << static_cast<int>(history.size() - 1) << termcolor::reset << " moves" << endl << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
-    history[j]->situation.print();
+    history[j]->situation.print(history[j]->move);
     cout << endl;
     cout << endl;
   }
@@ -64,7 +66,7 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
       state_explored++;
 
       if (!history.exists(new_situation)) {
-        auto new_history_node = new HistoryNode(new_situation, node);
+        auto new_history_node = new HistoryNode(new_situation, move, node);
         node->children.push_back(new_history_node);
         unique_state_explored++;
         new_nodes.push_back(new_history_node);

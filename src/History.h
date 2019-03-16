@@ -9,11 +9,12 @@ using namespace std;
 class HistoryNode {
  public:
   Situation situation;
+  Move move;
   vector<HistoryNode *> children;
   HistoryNode *parent = nullptr;
 
   explicit HistoryNode(const Situation &situation);
-  explicit HistoryNode(const Situation &situation, HistoryNode *parent);
+  explicit HistoryNode(const Situation &situation, Move move , HistoryNode *parent);
 
   ~HistoryNode();
 };

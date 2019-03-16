@@ -31,9 +31,10 @@ HistoryNode::HistoryNode(const Situation &s) {
   situation = s;
 }
 
-HistoryNode::HistoryNode(const Situation &s, HistoryNode *p) {
+HistoryNode::HistoryNode(const Situation &s, Move m, HistoryNode *p) {
   situation = s;
   parent = p;
+  move = m;
 }
 
 HistoryNode::~HistoryNode() {

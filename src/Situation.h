@@ -48,6 +48,7 @@ class Situation {
   bool is_solution();
 
   void print();
+  void print(Move &move);
 
   void compute_moves();
 
