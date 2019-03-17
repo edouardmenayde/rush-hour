@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Explorer.h"
 #include <sys/time.h>
+#include "deps/termcolor.hpp"
 
 double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
   double res = 0;
@@ -10,7 +11,6 @@ double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
 }
 
 Explorer::Explorer(Situation &root) : history(History(root)) {
-  int nb_moves = 0;
   vector<HistoryNode *> nodes;
   nodes.push_back(history.root);
 
@@ -23,7 +23,7 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
     exit(EXIT_FAILURE);
   }
 
-  explore(nodes, nb_moves);
+  explore(nodes);
 
   err = gettimeofday(&tv2, nullptr);
   if (err != 0) {
@@ -33,7 +33,7 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
 
   double amount_of_time = timevalsub(&tv1, &tv2);
 
-  vector<HistoryNode *> history;
+  vector<HistoryNode *> history(0);
 
   HistoryNode *current_node = solution;
 
@@ -43,42 +43,48 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
   }
 
   cout << "Found a solution :" << endl
-       << "- in " << amount_of_time << "s" << endl
-       << "- exploring " << state_explored << " states " << endl
-       << "- in " << history.size() - 1 << " moves" << endl << endl;
+       << "- in " << termcolor::red << amount_of_time << "s" << termcolor::reset << endl
+       << "- exploring " << termcolor::red << state_explored << termcolor::reset << " states (" << unique_state_explored
+       << " uniques)" << endl
+       << "- in " << termcolor::red << static_cast<int>(history.size() - 1) << termcolor::reset << " moves" << endl
+       << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
-    history[j]->situation.print();
+    history[j]->situation.print(history[j]->move);
     cout << endl;
     cout << endl;
   }
 }
 
-void Explorer::explore(vector<HistoryNode *> nodes, int nb_moves) {
-  vector<HistoryNode *> new_nodes;
+void Explorer::explore(vector<HistoryNode *> nodes) {
+  bool exploring = true;
 
-  for (auto &node : nodes) {
-    node->situation.compute_moves();
-    for (auto &move : node->situation.moves) {
-      Situation new_situation;
-      node->situation.move(move, new_situation);
-      state_explored++;
+  while (exploring) {
+    vector<HistoryNode *> new_nodes;
+    for (auto &node : nodes) {
+      node->situation.compute_moves();
+      for (auto &move : node->situation.moves) {
+        Situation new_situation(node->situation, move);
+        state_explored++;
 
-      if (new_situation.is_solution()) {
-        auto new_history_node = new HistoryNode(new_situation, node);
-        node->children.push_back(new_history_node);
-        solution = new_history_node;
-        return;
-      } else if (!history.exists(new_situation)) {
-        auto new_history_node = new HistoryNode(new_situation, node);
-        node->children.push_back(new_history_node);
+        if (!history.exists(new_situation, node)) {
+          auto new_history_node = new HistoryNode(new_situation, move, node);
+          node->children.push_back(new_history_node);
+          unique_state_explored++;
 
-        new_nodes.push_back(new_history_node);
+          if (new_situation.is_solution()) {
+            solution = new_history_node;
+            return;
+          } else {
+            new_nodes.push_back(new_history_node);
+          }
+        }
       }
     }
-  }
 
-  if (!new_nodes.empty()) {
-    explore(new_nodes, nb_moves + 1);
+    nodes.erase(nodes.begin(), nodes.end());
+    copy(new_nodes.begin(), new_nodes.end(), back_inserter(nodes));
+
+    exploring = !new_nodes.empty();
   }
 }

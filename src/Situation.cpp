@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include "Situation.h"
+#include "deps/termcolor.hpp"
 
 // Move
 
@@ -52,13 +53,38 @@ Situation::Situation(string filename) {
 }
 
 void Situation::print() {
-  const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
       if (parking[i][j] == -1) {
         cout << "  ";
+      } else if (parking[i][j] == 0) {
+        cout << termcolor::yellow << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
       } else {
+        cout << alphabet[parking[i][j]] << " ";
+      }
+    }
+    if (i + 1 < SIZE) {
+      cout << endl;
+    }
+  }
+}
+
+void Situation::print(Move &move) {
+  const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  for (int i = 0; i < SIZE; i++) {
+    for (int j = 0; j < SIZE; j++) {
+      if (parking[i][j] == -1) {
+        cout << "  ";
+      } else if (parking[i][j] == 0) {
+        cout << termcolor::blue << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
+      }
+      else if (parking[i][j] == move.car_index) {
+        cout << termcolor::yellow << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
+      }
+      else {
         cout << alphabet[parking[i][j]] << " ";
       }
     }
@@ -157,10 +183,10 @@ void Situation::compute_parking() {
   }
 }
 
-void Situation::move(Move move, Situation &new_situation) {
-  copy(cars.begin(), cars.end(), back_inserter(new_situation.cars));
+Situation::Situation(const Situation &old_situation, const Move &move) {
+  copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(cars));
 
-  auto &car = new_situation.cars[move.car_index];
+  auto &car = cars[move.car_index];
 
   switch (move.direction) {
     case UP:car.line -= move.steps;
@@ -171,11 +197,13 @@ void Situation::move(Move move, Situation &new_situation) {
       break;
     case LEFT:car.column -= move.steps;
       break;
+    default:
+      perror("Unrecognized move");
   }
 
-  new_situation.exit = exit;
+  exit = old_situation.exit;
 
-  new_situation.compute_parking();
+  compute_parking();
 }
 
 bool Situation::is_solution() {
@@ -196,3 +224,4 @@ Situation &Situation::operator=(const Situation &old_situation) {
 
   return *this;
 }
+

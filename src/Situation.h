@@ -42,12 +42,14 @@ class Situation {
    */
   Vector2 exit{};
 
-  Situation() = default;
   explicit Situation(string filename);
+
+  explicit Situation(const Situation &old_situation, const Move &move);
 
   bool is_solution();
 
   void print();
+  void print(Move &move);
 
   void compute_moves();
 
@@ -56,8 +58,6 @@ class Situation {
   bool operator!=(const Situation &rhs) const;
 
   Situation &operator=(const Situation &old_situation);
-
-  void move(Move move, Situation &new_situation);
 };
 
 #endif //RUSH_HOUR_SITUATION_H

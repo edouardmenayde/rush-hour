@@ -9,10 +9,11 @@ class Explorer {
 
   History history;
 
-  void explore(vector<HistoryNode *> history_node, int nb_moves);
+  void explore(vector<HistoryNode *> history_node);
 
-  HistoryNode *solution;
+  HistoryNode *solution = nullptr;
 
+  int unique_state_explored = 0;
   int state_explored = 0;
 };
 
