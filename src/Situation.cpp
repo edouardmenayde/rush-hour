@@ -44,9 +44,9 @@ Situation::Situation(string filename) {
   bool horizontal;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
-    cars.push_back(Car{
+    cars.emplace_back(
         line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL
-    });
+    );
   }
 
   file.close();
