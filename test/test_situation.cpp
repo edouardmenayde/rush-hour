@@ -20,9 +20,9 @@ TEST_CASE("Compute moves from a situation") {
       Move{10, UP, 2},   // 4 4 2 0
   };
 
-  test.compute_moves();
+  auto moves = test.get_moves();
 
-  REQUIRE(test.moves == expected_moves);
+  REQUIRE(moves == expected_moves);
 }
 
 TEST_CASE("Compute parking from a situation") {

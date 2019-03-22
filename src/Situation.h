@@ -13,15 +13,19 @@ using namespace std;
 
 class Move {
  public:
-  unsigned int car_index;
+  unsigned char car_index; // We know we will never have more than 255 cars
   Direction direction;
-  int steps;
+  unsigned char steps; // We will never have more than 255 steps
+
+  Move(unsigned char i, Direction d, unsigned char s) : car_index(i), direction(d), steps(s) {}
+  Move() {}
+
   bool operator==(const Move &rhs) const;
   bool operator!=(const Move &rhs) const;
   friend ostream &operator<<(ostream &os, const Move &move1);
 };
 
-const unsigned int SIZE = 6;
+const unsigned char SIZE = 6;
 
 /**
  * A parking situation with all the cars in it and the exit.
@@ -31,7 +35,6 @@ class Situation {
   void compute_parking();
   array<array<int, SIZE>, SIZE> parking{};
 
-  vector<Move> moves{};
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
@@ -51,7 +54,7 @@ class Situation {
   void print();
   void print(Move &move);
 
-  void compute_moves();
+  vector<Move> get_moves();
 
   bool operator==(const Situation &rhs) const;
 

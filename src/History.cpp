@@ -44,9 +44,8 @@ bool History::exists_aux(const Situation &situation, const HistoryNode *node, co
 
 HistoryNode::HistoryNode(const Situation &s) : situation(s) {}
 
-HistoryNode::HistoryNode(const Situation &s, Move m, HistoryNode *p) : situation(s) {
+HistoryNode::HistoryNode(const Situation &s, Move m, HistoryNode *p) : situation(s), move(m) {
   parent = p;
-  move = m;
 }
 
 HistoryNode::~HistoryNode() {

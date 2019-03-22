@@ -38,7 +38,7 @@ Situation::Situation(string filename) {
 
   file >> x_exit >> y_exit; // First line consist of the exit coordinates
 
-  exit = Vector2{x_exit, y_exit};
+  exit = Vector2{(unsigned char) x_exit, (unsigned char) y_exit};
 
   int line_pos, column_pos, length;
   bool horizontal;
@@ -94,7 +94,8 @@ void Situation::print(Move &move) {
   }
 }
 
-void Situation::compute_moves() {
+vector<Move> Situation::get_moves() {
+  vector<Move> moves;
   unsigned int car_number = 0;
   const int MAX_MOVES = 4;
   for (auto &car : cars) {
@@ -103,7 +104,7 @@ void Situation::compute_moves() {
         int i = 1;
 
         while (i <= MAX_MOVES && car.line - i >= 0 && parking[car.line - i][car.column] == -1) {
-          moves.push_back(Move{car_number, UP, i});
+          moves.emplace_back((unsigned char) car_number, UP, (unsigned char) i);
           i++;
         }
       }
@@ -111,7 +112,7 @@ void Situation::compute_moves() {
       {
         int i = 1;
         while (i <= MAX_MOVES && car.line + i <= SIZE && parking[car.line + car.length - 1 + i][car.column] == -1) {
-          moves.push_back(Move{car_number, DOWN, i});
+          moves.emplace_back((unsigned char) car_number, DOWN, (unsigned char) i);
           i++;
         }
       }
@@ -119,7 +120,7 @@ void Situation::compute_moves() {
       {
         int i = 1;
         while (i <= MAX_MOVES && car.column - i >= 0 && parking[car.line][car.column - i] == -1) {
-          moves.push_back(Move{car_number, LEFT, i});
+          moves.emplace_back((unsigned char) car_number, LEFT, (unsigned char) i);
           i++;
         }
       }
@@ -127,13 +128,15 @@ void Situation::compute_moves() {
       {
         int i = 1;
         while (i <= MAX_MOVES && car.column + i <= SIZE && parking[car.line][car.column + car.length - 1 + i] == -1) {
-          moves.push_back(Move{car_number, RIGHT, i});
+          moves.emplace_back((unsigned char) car_number, RIGHT, (unsigned char) i);
           i++;
         }
       }
     }
     car_number++;
   }
+
+  return moves;
 }
 
 void Situation::compute_parking() {
