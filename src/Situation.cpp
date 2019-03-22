@@ -34,13 +34,13 @@ Situation::Situation(string filename) {
 
   string line;
 
-  unsigned int x_exit, y_exit;
+  ushort x_exit, y_exit;
 
   file >> x_exit >> y_exit; // First line consist of the exit coordinates
 
-  exit = Vector2{(unsigned char) x_exit, (unsigned char) y_exit};
+  exit = Vector2{x_exit, y_exit};
 
-  int line_pos, column_pos, length;
+  ushort line_pos, column_pos, length;
   bool horizontal;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
@@ -96,39 +96,41 @@ void Situation::print(Move &move) {
 
 vector<Move> Situation::get_moves() {
   vector<Move> moves;
-  unsigned int car_number = 0;
-  const int MAX_MOVES = 4;
+  short car_number = 0;
+  const short MAX_MOVES = 4;
+  const short EMPTY = -1;
   for (auto &car : cars) {
     if (car.plane == VERTICAL) {
       {
-        int i = 1;
+        ushort i = 1;
 
-        while (i <= MAX_MOVES && car.line - i >= 0 && parking[car.line - i][car.column] == -1) {
-          moves.emplace_back((unsigned char) car_number, UP, (unsigned char) i);
+        while (i <= MAX_MOVES && car.line - i >= 0 && parking[car.line - i][car.column] == EMPTY) {
+          moves.emplace_back(car_number, UP, i);
           i++;
         }
       }
 
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.line + i <= SIZE && parking[car.line + car.length - 1 + i][car.column] == -1) {
-          moves.emplace_back((unsigned char) car_number, DOWN, (unsigned char) i);
+        ushort i = 1;
+
+        while (i <= MAX_MOVES && car.line + i <= SIZE && parking[car.line + car.length - 1 + i][car.column] == EMPTY) {
+          moves.emplace_back(car_number, DOWN, i);
           i++;
         }
       }
     } else {
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.column - i >= 0 && parking[car.line][car.column - i] == -1) {
-          moves.emplace_back((unsigned char) car_number, LEFT, (unsigned char) i);
+        ushort i = 1;
+        while (i <= MAX_MOVES && car.column - i >= 0 && parking[car.line][car.column - i] == EMPTY) {
+          moves.emplace_back(car_number, LEFT, i);
           i++;
         }
       }
 
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.column + i <= SIZE && parking[car.line][car.column + car.length - 1 + i] == -1) {
-          moves.emplace_back((unsigned char) car_number, RIGHT, (unsigned char) i);
+        ushort i = 1;
+        while (i <= MAX_MOVES && car.column + i <= SIZE && parking[car.line][car.column + car.length - 1 + i] == EMPTY) {
+          moves.emplace_back(car_number, RIGHT, i);
           i++;
         }
       }
@@ -146,7 +148,7 @@ void Situation::compute_parking() {
     }
   }
 
-  unsigned int car_number = 0;
+  ushort car_number = 0;
 
   for (auto &car : cars) {
     if (car.plane == HORIZONTAL) {

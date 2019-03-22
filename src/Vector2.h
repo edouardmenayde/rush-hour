@@ -2,8 +2,8 @@
 #define RUSH_HOUR_VECTOR2_H
 
 struct Vector2 {
-  unsigned char line;
-  unsigned char column;
+  ushort line;
+  ushort column;
 };
 
 #endif //RUSH_HOUR_VECTOR2_H
