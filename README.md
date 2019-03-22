@@ -22,6 +22,5 @@ We can see `History:exists` is the function were our program spends most of the 
 
 ![](doc/mprof02-01.png)
 
-After removing the vector moves of `Situation` to provide it just when needed in the `Explorer` via a return and 
-using `unsgined char` instead of `int` or `unsigned int` in data `structs` and `class` where possible we saved some 
-memory and do not exceed 3.5MiB as we previously did.
+After removing the vector moves of `Situation` to provide it just when needed in the `Explorer` via a return memory 
+and use `short` instead of `int` and do not exceed 3.5MiB as we previously did.
