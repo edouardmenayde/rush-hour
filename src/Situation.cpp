@@ -113,7 +113,8 @@ vector<Move> Situation::get_moves() {
       {
         ushort i = 1;
 
-        while (i <= MAX_MOVES && car.line + i <= SIZE && parking[car.line + car.length - 1 + i][car.column] == EMPTY) {
+        while (i <= MAX_MOVES && car.line + car.length - 1 + i <= SIZE && parking[car.line + car.length - 1 + i][car
+            .column] == EMPTY) {
           moves.emplace_back(car_number, DOWN, i);
           i++;
         }
@@ -129,7 +130,8 @@ vector<Move> Situation::get_moves() {
 
       {
         ushort i = 1;
-        while (i <= MAX_MOVES && car.column + i <= SIZE && parking[car.line][car.column + car.length - 1 + i] == EMPTY) {
+        while (i <= MAX_MOVES && car.column + car.length - 1 + i <= SIZE
+            && parking[car.line][car.column + car.length - 1 + i] == EMPTY) {
           moves.emplace_back(car_number, RIGHT, i);
           i++;
         }
@@ -170,6 +172,16 @@ Situation::Situation(
   copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(cars));
 
   auto &car = cars[move.car_index];
+
+  if ((move.direction == UP || move.direction == DOWN) && car.plane ==
+      HORIZONTAL) {
+    perror("Invalid move");
+  }
+
+  if ((move.direction == LEFT || move.direction == RIGHT) && car.plane ==
+      VERTICAL) {
+    perror("Invalid move");
+  }
 
   switch (move.direction) {
     case UP:car.line -= move.steps;
