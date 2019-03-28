@@ -17,7 +17,7 @@ bool Move::operator!=(const Move &rhs) const {
 }
 
 ostream &operator<<(ostream &os, const Move &move) {
-  os << "(" << move.car_index << ", " << move.direction << ", " << move.steps << ")";
+  os << "(" << (int) move.car_index << ", " << (int) move.direction << ", " << (int) move.steps << ")";
   return os;
 }
 
@@ -34,18 +34,18 @@ Situation::Situation(string filename) {
 
   string line;
 
-  unsigned int x_exit, y_exit;
+  ushort x_exit, y_exit;
 
   file >> x_exit >> y_exit; // First line consist of the exit coordinates
 
-  exit = Vector2{x_exit, y_exit};
+  exit = Vector2{(uint8_t) x_exit, (uint8_t) y_exit};
 
-  int line_pos, column_pos, length;
+  ushort line_pos, column_pos, length;
   bool horizontal;
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
     cars.emplace_back(
-        line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL
+        line_pos, column_pos, length, horizontal ? Plane::HORIZONTAL : Plane::VERTICAL
     );
   }
 
@@ -57,14 +57,16 @@ Situation::Situation(string filename) {
 void Situation::print() {
   const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  for (int i = 0; i < SIZE; i++) {
-    for (int j = 0; j < SIZE; j++) {
-      if (parking[i][j] == -1) {
+  for (int8_t i = 0; i < SIZE; i++) {
+    for (int8_t j = 0; j < SIZE; j++) {
+      if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
         cout << "  ";
-      } else if (parking[i][j] == 0) {
-        cout << termcolor::yellow << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
+      } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
+        cout << termcolor::yellow << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] <<
+             termcolor::reset
+             << " ";
       } else {
-        cout << alphabet[parking[i][j]] << " ";
+        cout << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
       }
     }
     if (i + 1 < SIZE) {
@@ -76,16 +78,18 @@ void Situation::print() {
 void Situation::print(Move &move) {
   const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  for (int i = 0; i < SIZE; i++) {
-    for (int j = 0; j < SIZE; j++) {
-      if (parking[i][j] == -1) {
+  for (int8_t i = 0; i < SIZE; i++) {
+    for (int8_t j = 0; j < SIZE; j++) {
+      if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
         cout << "  ";
-      } else if (parking[i][j] == 0) {
-        cout << termcolor::blue << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
-      } else if (parking[i][j] == move.car_index) {
-        cout << termcolor::yellow << termcolor::bold << alphabet[parking[i][j]] << termcolor::reset << " ";
+      } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
+        cout << termcolor::blue << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)]
+             << termcolor::reset << " ";
+      } else if (parking.at((unsigned long) i).at((unsigned long) j) == move.car_index) {
+        cout << termcolor::yellow << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)]
+             << termcolor::reset << " ";
       } else {
-        cout << alphabet[parking[i][j]] << " ";
+        cout << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
       }
     }
     if (i + 1 < SIZE) {
@@ -94,68 +98,74 @@ void Situation::print(Move &move) {
   }
 }
 
-void Situation::compute_moves() {
-  unsigned int car_number = 0;
-  const int MAX_MOVES = 4;
+vector<Move> Situation::get_moves() {
+  vector<Move> moves;
+  uint8_t car_number = 0;
+  const uint8_t MAX_MOVES = 4;
+  const int8_t EMPTY = -1;
   for (auto &car : cars) {
-    if (car.plane == VERTICAL) {
+    if (car.plane == Plane::VERTICAL) {
       {
-        int i = 1;
+        uint8_t i = 1;
 
-        while (i <= MAX_MOVES && car.line - i >= 0 && parking[car.line - i][car.column] == -1) {
-          moves.push_back(Move{car_number, UP, i});
+        while (i <= MAX_MOVES && car.line - i >= 0 && parking.at(car.line - i).at(car.column) == EMPTY) {
+          moves.emplace_back(car_number, Direction::UP, i);
           i++;
         }
       }
 
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.line + i <= SIZE && parking[car.line + car.length - 1 + i][car.column] == -1) {
-          moves.push_back(Move{car_number, DOWN, i});
+        uint8_t i = 1;
+
+        while (i <= MAX_MOVES && car.line + car.length - 1 + i < SIZE
+            && parking.at((unsigned long) car.line + car.length - 1 + i).at(car.column) == EMPTY) {
+          moves.emplace_back(car_number, Direction::DOWN, i);
           i++;
         }
       }
     } else {
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.column - i >= 0 && parking[car.line][car.column - i] == -1) {
-          moves.push_back(Move{car_number, LEFT, i});
+        uint8_t i = 1;
+        while (i <= MAX_MOVES && car.column - i >= 0 && parking.at(car.line).at(car.column - i) == EMPTY) {
+          moves.emplace_back(car_number, Direction::LEFT, i);
           i++;
         }
       }
 
       {
-        int i = 1;
-        while (i <= MAX_MOVES && car.column + i <= SIZE && parking[car.line][car.column + car.length - 1 + i] == -1) {
-          moves.push_back(Move{car_number, RIGHT, i});
+        uint8_t i = 1;
+        while (i <= MAX_MOVES && car.column + car.length - 1 + i < SIZE
+            && parking.at(car.line).at((unsigned long) car.column + car.length - 1 + i) == EMPTY) {
+          moves.emplace_back(car_number, Direction::RIGHT, i);
           i++;
         }
       }
     }
     car_number++;
   }
+
+  return moves;
 }
 
 void Situation::compute_parking() {
-  for (int i = 0; i < SIZE; i++) {
-    for (int j = 0; j < SIZE; j++) {
-      parking[i][j] = -1;
+  for (int8_t i = 0; i < SIZE; i++) {
+    for (int8_t j = 0; j < SIZE; j++) {
+      parking.at((unsigned long) i).at((unsigned long) j) = -1;
     }
   }
 
-  unsigned int car_number = 0;
-
-  for (auto &car : cars) {
-    if (car.plane == HORIZONTAL) {
-      for (int i = 0; i < car.length; i++) {
-        parking[car.line][car.column + i] = car_number;
+  int8_t i = 0;
+  for (const auto &car : cars) {
+    if (car.plane == Plane::HORIZONTAL) {
+      for (int j = 0; j < car.length; j++) {
+        parking.at(car.line).at((unsigned long) car.column + j) = (int8_t) i;
       }
     } else {
-      for (int i = 0; i < car.length; i++) {
-        parking[car.line + i][car.column] = car_number;
+      for (int j = 0; j < car.length; j++) {
+        parking.at((unsigned long) car.line + j).at(car.column) = (int8_t) i;
       }
     }
-    car_number++;
+    i++;
   }
 }
 
@@ -164,16 +174,16 @@ Situation::Situation(
     const Move &move) {
   copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(cars));
 
-  auto &car = cars[move.car_index];
+  auto &car = cars.at(move.car_index);
 
   switch (move.direction) {
-    case UP:car.line -= move.steps;
+    case Direction::UP:car.line -= move.steps;
       break;
-    case DOWN:car.line += move.steps;
+    case Direction::DOWN:car.line += move.steps;
       break;
-    case RIGHT:car.column += move.steps;
+    case Direction::RIGHT:car.column += move.steps;
       break;
-    case LEFT:car.column -= move.steps;
+    case Direction::LEFT:car.column -= move.steps;
       break;
     default:perror("Unrecognized move");
   }
@@ -184,7 +194,7 @@ Situation::Situation(
 }
 
 bool Situation::is_solution() {
-  return parking[exit.line][exit.column] == TARGET_CAR_INDEX;
+  return parking.at(exit.line).at(exit.column) == TARGET_CAR_INDEX;
 }
 
 bool Situation::operator==(const Situation &rhs) const {
@@ -194,12 +204,3 @@ bool Situation::operator==(const Situation &rhs) const {
 bool Situation::operator!=(const Situation &rhs) const {
   return !(rhs == *this);
 }
-
-Situation &Situation::operator=(const Situation &old_situation) {
-  copy(old_situation.cars.begin(), old_situation.cars.end(), back_inserter(this->cars));
-  exit = old_situation.exit;
-  compute_parking();
-
-  return *this;
-}
-

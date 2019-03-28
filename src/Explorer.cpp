@@ -50,7 +50,12 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
        << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
-    history[j]->situation.print(history[j]->move);
+    if (auto m = history[j]->move) {
+      history[j]->situation.print(*m);
+    }
+    else {
+      history[j]->situation.print();
+    }
     cout << endl;
     cout << endl;
   }
@@ -62,8 +67,8 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
   while (exploring) {
     vector<HistoryNode *> new_nodes;
     for (auto &node : nodes) {
-      node->situation.compute_moves();
-      for (auto &move : node->situation.moves) {
+      auto moves = node->situation.get_moves();
+      for (auto &move : moves) {
         Situation new_situation(node->situation, move);
         state_explored++;
 

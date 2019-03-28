@@ -1,15 +1,16 @@
 #ifndef RUSH_HOUR_HISTORY_H
 #define RUSH_HOUR_HISTORY_H
 
-#include "Situation.h"
 #include <vector>
+#include <optional>
+#include "Situation.h"
 
 using namespace std;
 
 class HistoryNode {
  public:
   Situation situation;
-  Move move;
+  optional<Move> move;
   vector<HistoryNode *> children;
   HistoryNode *parent = nullptr;
 

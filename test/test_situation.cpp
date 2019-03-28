@@ -9,26 +9,26 @@ TEST_CASE("Compute moves from a situation") {
   Situation test("../test/support/puzzle.txt");
 
   vector<Move> expected_moves = {
-      Move{2, DOWN, 1},  // 0 2 3 1
-      Move{2, DOWN, 2},  // 0 2 3 1
-      Move{4, DOWN, 1},  // 1 3 2 0
-      Move{7, RIGHT, 1}, // 3 0 2 1
-      Move{7, RIGHT, 2}, // 3 0 2 1
-      Move{7, RIGHT, 3}, // 3 0 2 1
-      Move{9, UP, 1},    // 4 3 2 0
-      Move{10, UP, 1},   // 4 4 2 0
-      Move{10, UP, 2},   // 4 4 2 0
+      Move{2, Direction::DOWN, 1},  // 0 2 3 1
+      Move{2, Direction::DOWN, 2},  // 0 2 3 1
+      Move{4, Direction::DOWN, 1},  // 1 3 2 0
+      Move{7, Direction::RIGHT, 1}, // 3 0 2 1
+      Move{7, Direction::RIGHT, 2}, // 3 0 2 1
+      Move{7, Direction::RIGHT, 3}, // 3 0 2 1
+      Move{9, Direction::UP, 1},    // 4 3 2 0
+      Move{10, Direction::UP, 1},   // 4 4 2 0
+      Move{10, Direction::UP, 2},   // 4 4 2 0
   };
 
-  test.compute_moves();
+  auto moves = test.get_moves();
 
-  REQUIRE(test.moves == expected_moves);
+  REQUIRE(moves == expected_moves);
 }
 
 TEST_CASE("Compute parking from a situation") {
   Situation test("../test/support/puzzle.txt");
 
-  array<array<int, SIZE>, SIZE> expected_parking = {
+  array<array<int8_t, SIZE>, SIZE> expected_parking = {
       {
           {
               1, -1, 2, 3, 3, 3
@@ -59,7 +59,7 @@ TEST_CASE("Compute parking from a situation") {
 TEST_CASE("Can move a car") {
   Situation test("../test/support/puzzle.txt");
 
-  auto move = Move{7, RIGHT, 1};
+  auto move = Move{7, Direction::RIGHT, 1};
 
   Situation test2(test, move);
 
