@@ -26,25 +26,28 @@ class Move {
 
 const uint8_t SIZE = 6;
 
+typedef array<array<int8_t, SIZE>, SIZE> Parking;
+typedef vector<Car> Cars;
+
 /**
  * A parking situation with all the cars in it and the exit.
  */
 class Situation {
  public:
   /**
-   * 2D array representing the parking with -1 for a free spot, and 0 to n for the car index parked.
-   */
-  array<array<int8_t, SIZE>, SIZE> parking;
-
-  /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
-  vector<Car> cars;
+  Cars cars;
 
   /**
    * Represents the exit of the parking in 2D space.
    */
   Vector2 exit;
+
+  /**
+   * 2D array representing the parking with -1 for a free spot, and 0 to n for the car index parked.
+   */
+  Parking parking;
 
   explicit Situation(string filename);
 

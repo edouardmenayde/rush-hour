@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-enum Plane {
+enum class Plane : int8_t {
   VERTICAL,
   HORIZONTAL
 };
@@ -15,7 +15,7 @@ class Car {
   uint8_t line = 0;
   uint8_t column = 0;
   uint8_t length = 0;
-  Plane plane = HORIZONTAL;
+  Plane plane = Plane::HORIZONTAL;
 
   Car(uint8_t l, uint8_t c, uint8_t lgth, Plane p) : line(l), column(c), length(lgth), plane(p) {}
 
@@ -29,7 +29,8 @@ class Car {
     return !(rhs == *this);
   }
   friend std::ostream &operator<<(std::ostream &os, const Car &car) {
-    os << "(" << (int) car.line << ", " << (int) car.column << ", " << (int) car.length << ", " << car.plane << ")";
+    os << "(" << (int) car.line << ", " << (int) car.column << ", " << (int) car.length << ", " << (int) car.plane <<
+    ")";
     return os;
   }
 };

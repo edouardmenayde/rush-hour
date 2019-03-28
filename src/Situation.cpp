@@ -17,7 +17,7 @@ bool Move::operator!=(const Move &rhs) const {
 }
 
 ostream &operator<<(ostream &os, const Move &move) {
-  os << "(" << (int) move.car_index << ", " << move.direction << ", " << (int) move.steps << ")";
+  os << "(" << (int) move.car_index << ", " << (int) move.direction << ", " << (int) move.steps << ")";
   return os;
 }
 
@@ -45,7 +45,7 @@ Situation::Situation(string filename) {
 
   while (file >> line_pos >> column_pos >> length >> horizontal) {
     cars.emplace_back(
-        line_pos, column_pos, length, horizontal ? HORIZONTAL : VERTICAL
+        line_pos, column_pos, length, horizontal ? Plane::HORIZONTAL : Plane::VERTICAL
     );
   }
 
@@ -104,12 +104,12 @@ vector<Move> Situation::get_moves() {
   const uint8_t MAX_MOVES = 4;
   const int8_t EMPTY = -1;
   for (auto &car : cars) {
-    if (car.plane == VERTICAL) {
+    if (car.plane == Plane::VERTICAL) {
       {
         uint8_t i = 1;
 
         while (i <= MAX_MOVES && car.line - i >= 0 && parking.at(car.line - i).at(car.column) == EMPTY) {
-          moves.emplace_back(car_number, UP, i);
+          moves.emplace_back(car_number, Direction::UP, i);
           i++;
         }
       }
@@ -119,7 +119,7 @@ vector<Move> Situation::get_moves() {
 
         while (i <= MAX_MOVES && car.line + car.length - 1 + i < SIZE
             && parking.at((unsigned long) car.line + car.length - 1 + i).at(car.column) == EMPTY) {
-          moves.emplace_back(car_number, DOWN, i);
+          moves.emplace_back(car_number, Direction::DOWN, i);
           i++;
         }
       }
@@ -127,7 +127,7 @@ vector<Move> Situation::get_moves() {
       {
         uint8_t i = 1;
         while (i <= MAX_MOVES && car.column - i >= 0 && parking.at(car.line).at(car.column - i) == EMPTY) {
-          moves.emplace_back(car_number, LEFT, i);
+          moves.emplace_back(car_number, Direction::LEFT, i);
           i++;
         }
       }
@@ -136,7 +136,7 @@ vector<Move> Situation::get_moves() {
         uint8_t i = 1;
         while (i <= MAX_MOVES && car.column + car.length - 1 + i < SIZE
             && parking.at(car.line).at((unsigned long) car.column + car.length - 1 + i) == EMPTY) {
-          moves.emplace_back(car_number, RIGHT, i);
+          moves.emplace_back(car_number, Direction::RIGHT, i);
           i++;
         }
       }
@@ -156,7 +156,7 @@ void Situation::compute_parking() {
 
   int8_t i = 0;
   for (const auto &car : cars) {
-    if (car.plane == HORIZONTAL) {
+    if (car.plane == Plane::HORIZONTAL) {
       for (int j = 0; j < car.length; j++) {
         parking.at(car.line).at((unsigned long) car.column + j) = (int8_t) i;
       }
@@ -177,13 +177,13 @@ Situation::Situation(
   auto &car = cars.at(move.car_index);
 
   switch (move.direction) {
-    case UP:car.line -= move.steps;
+    case Direction::UP:car.line -= move.steps;
       break;
-    case DOWN:car.line += move.steps;
+    case Direction::DOWN:car.line += move.steps;
       break;
-    case RIGHT:car.column += move.steps;
+    case Direction::RIGHT:car.column += move.steps;
       break;
-    case LEFT:car.column -= move.steps;
+    case Direction::LEFT:car.column -= move.steps;
       break;
     default:perror("Unrecognized move");
   }

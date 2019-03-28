@@ -25,6 +25,8 @@ We can see `History:exists` is the function were our program spends most of the 
 After removing the vector moves of `Situation` to provide it just when needed in the `Explorer` via a return memory 
 and use `short` instead of `int` and do not exceed 3.5MiB as we previously did.
 
+![](doc/mprof02-02.png)
+
 ## Bugs
 
 ### Bad move computing
