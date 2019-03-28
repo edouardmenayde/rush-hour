@@ -13,37 +13,38 @@ using namespace std;
 
 class Move {
  public:
-  ushort car_index{}; // We know we will never have more than 255 cars
-  Direction direction{};
-  ushort steps{}; // We will never have more than 255 steps
+  uint8_t car_index; // We know we will never have more than 255 cars
+  Direction direction;
+  uint8_t steps; // We will never have more than 255 steps
 
-  Move(ushort i, Direction d, ushort s) : car_index(i), direction(d), steps(s) {}
-  Move() = default;
+  Move(uint8_t i, Direction d, uint8_t s) : car_index(i), direction(d), steps(s) {}
 
   bool operator==(const Move &rhs) const;
   bool operator!=(const Move &rhs) const;
   friend ostream &operator<<(ostream &os, const Move &move1);
 };
 
-const short SIZE = 6;
+const uint8_t SIZE = 6;
 
 /**
  * A parking situation with all the cars in it and the exit.
  */
 class Situation {
  public:
-  void compute_parking();
-  array<array<short, SIZE>, SIZE> parking{};
+  /**
+   * 2D array representing the parking with -1 for a free spot, and 0 to n for the car index parked.
+   */
+  array<array<int8_t, SIZE>, SIZE> parking;
 
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
    */
-  std::vector<Car> cars{};
+  vector<Car> cars;
 
   /**
    * Represents the exit of the parking in 2D space.
    */
-  Vector2 exit{};
+  Vector2 exit;
 
   explicit Situation(string filename);
 
@@ -52,15 +53,16 @@ class Situation {
   bool is_solution();
 
   void print();
-  void print(Move &move);
 
-  vector<Move> get_moves();
+  void print(Move &move);
 
   bool operator==(const Situation &rhs) const;
 
   bool operator!=(const Situation &rhs) const;
 
-  Situation &operator=(const Situation &old_situation);
+  vector<Move> get_moves();
+
+  void compute_parking();
 };
 
 #endif //RUSH_HOUR_SITUATION_H

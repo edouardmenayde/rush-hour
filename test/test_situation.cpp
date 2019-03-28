@@ -28,7 +28,7 @@ TEST_CASE("Compute moves from a situation") {
 TEST_CASE("Compute parking from a situation") {
   Situation test("../test/support/puzzle.txt");
 
-  array<array<short, SIZE>, SIZE> expected_parking = {
+  array<array<int8_t, SIZE>, SIZE> expected_parking = {
       {
           {
               1, -1, 2, 3, 3, 3

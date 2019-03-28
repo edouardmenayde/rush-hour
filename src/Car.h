@@ -1,21 +1,23 @@
 #ifndef RUSH_HOUR_CAR_H
 #define RUSH_HOUR_CAR_H
 
+#include <ostream>
+
 enum Plane {
   VERTICAL,
   HORIZONTAL
 };
 
-const ushort TARGET_CAR_INDEX = 0;
+const uint8_t TARGET_CAR_INDEX = 0;
 
 class Car {
  public:
-  ushort line = 0;
-  ushort column = 0;
-  ushort length = 0;
+  uint8_t line = 0;
+  uint8_t column = 0;
+  uint8_t length = 0;
   Plane plane = HORIZONTAL;
 
-  Car(ushort l, ushort c, ushort lgth, Plane p) : line(l), column(c), length(lgth), plane(p) {}
+  Car(uint8_t l, uint8_t c, uint8_t lgth, Plane p) : line(l), column(c), length(lgth), plane(p) {}
 
   bool operator==(const Car &rhs) const {
     return line == rhs.line &&
@@ -25,6 +27,10 @@ class Car {
   }
   bool operator!=(const Car &rhs) const {
     return !(rhs == *this);
+  }
+  friend std::ostream &operator<<(std::ostream &os, const Car &car) {
+    os << "(" << (int) car.line << ", " << (int) car.column << ", " << (int) car.length << ", " << car.plane << ")";
+    return os;
   }
 };
 

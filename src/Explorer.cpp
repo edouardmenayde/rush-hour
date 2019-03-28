@@ -50,7 +50,12 @@ Explorer::Explorer(Situation &root) : history(History(root)) {
        << endl;
 
   for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
-    history[j]->situation.print(history[j]->move);
+    if (auto m = history[j]->move) {
+      history[j]->situation.print(*m);
+    }
+    else {
+      history[j]->situation.print();
+    }
     cout << endl;
     cout << endl;
   }
