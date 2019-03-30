@@ -1,10 +1,13 @@
 #include <iostream>
 #include "Situation.h"
 #include "Explorer.h"
+#include "Generator.h"
 
 int main() {
-  Situation test("../test/support/puzzle.txt");
-  Explorer explorer(test);
+//  Situation test("../test/support/puzzle.txt");
+//  Explorer explorer(test);
+
+  Generator generator(3);
 
   cout << "Plane: " << sizeof(Plane) << "B" << endl;
   cout << "Direction: " << sizeof(Direction) << "B" << endl;

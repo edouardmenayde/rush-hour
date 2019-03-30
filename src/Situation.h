@@ -26,8 +26,12 @@ class Move {
 
 const uint8_t SIZE = 6;
 
+const int8_t EMPTY = -1;
+
 typedef array<array<int8_t, SIZE>, SIZE> Parking;
 typedef vector<Car> Cars;
+
+const string ALPHABET = "=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /**
  * A parking situation with all the cars in it and the exit.
@@ -49,6 +53,8 @@ class Situation {
    */
   Parking parking;
 
+  explicit Situation();
+
   explicit Situation(string filename);
 
   explicit Situation(const Situation &old_situation, const Move &move);
@@ -66,6 +72,8 @@ class Situation {
   vector<Move> get_moves();
 
   void compute_parking();
+
+  void reset_parking();
 };
 
 #endif //RUSH_HOUR_SITUATION_H
