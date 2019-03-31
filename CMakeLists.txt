@@ -8,4 +8,4 @@ set(SRC src/Car.h src/Situation.cpp src/Situation.h src/Vector2.h src/History.cp
         src/deps/termcolor.hpp src/utils.h src/utils.cpp)
 
 add_executable(rush-hour src/main.cpp ${SRC})
-add_executable(rush-hour-tests test/catch.hpp test/test_main.cpp test/test_situation.cpp ${SRC})
+add_executable(rush-hour-tests test/catch.hpp test/test_main.cpp test/test_situation.cpp test/test_explorer.cpp ${SRC})

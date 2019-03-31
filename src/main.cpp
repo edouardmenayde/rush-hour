@@ -4,10 +4,7 @@
 #include "Generator.h"
 
 int main() {
-//  Situation test("../test/support/puzzle.txt");
-//  Explorer explorer(test);
-
-  Generator generator(3);
+  Generator generator(2);
 
   cout << "Plane: " << sizeof(Plane) << "B" << endl;
   cout << "Direction: " << sizeof(Direction) << "B" << endl;

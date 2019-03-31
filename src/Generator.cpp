@@ -11,10 +11,10 @@ bool Range::is_between(int m) {
 }
 
 Generator::Generator(uint8_t difficulty_level) {
-#ifndef DEBUG
+//#ifndef DEBUG
   std::random_device random;
   generator.seed(random());
-#endif
+//#endif
   struct timeval tv1{}, tv2{};
 
   if (gettimeofday(&tv1, nullptr) != 0) {
@@ -27,42 +27,44 @@ Generator::Generator(uint8_t difficulty_level) {
   bool generating = true;
   int tries = 1;
 
-  while (generating) {
-    switch (difficulty_level) {
-      case 1: {
-        uniform_int_distribution<uint8_t> lvl1_moves_cars(3, 5);
-        number_of_cars = lvl1_moves_cars(generator);
-        range = Range{1, 10};
-        break;
-      }
-      case 2: {
-        uniform_int_distribution<uint8_t> lvl2_moves_cars(5, 7);
-        number_of_cars = lvl2_moves_cars(generator);
-        range = Range{11, 20};
-        break;
-      }
-      case 3: {
-        uniform_int_distribution<uint8_t> lvl3_moves_cars(7, 9);
-        number_of_cars = lvl3_moves_cars(generator);
-        range = Range{21, 30};
-        break;
-      }
-      case 4: {
-        uniform_int_distribution<uint8_t> lvl4_moves_cars(10, 13);
-        number_of_cars = lvl4_moves_cars(generator);
-        range = Range{31, 40};
-        break;
-      }
-      default:break;
+  switch (difficulty_level) {
+    case 1: {
+      uniform_int_distribution<uint8_t> lvl1_moves_cars(3, 5);
+      number_of_cars = lvl1_moves_cars(generator);
+      range = Range{1, 10};
+      break;
     }
+    case 2: {
+      uniform_int_distribution<uint8_t> lvl2_moves_cars(5, 7);
+      number_of_cars = lvl2_moves_cars(generator);
+      range = Range{11, 20};
+      break;
+    }
+    case 3: {
+      uniform_int_distribution<uint8_t> lvl3_moves_cars(7, 9);
+      number_of_cars = lvl3_moves_cars(generator);
+      range = Range{21, 30};
+      break;
+    }
+    case 4: {
+      uniform_int_distribution<uint8_t> lvl4_moves_cars(10, 13);
+      number_of_cars = lvl4_moves_cars(generator);
+      range = Range{31, 40};
+      break;
+    }
+    default:break;
+  }
 
+  uniform_int_distribution<uint8_t> position_range(0, SIZE - 1);
+  uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
+  uniform_int_distribution<uint8_t> length_range(2, 3);
+  uniform_int_distribution<uint8_t> direction_range(0, 1);
+
+  cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range
+  .end << " moves." << endl;
+
+  while (generating) {
     Situation initial_situation;
-
-    uniform_int_distribution<uint8_t> position_range(0, SIZE - 1);
-    uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
-    uniform_int_distribution<uint8_t> length_range(2, 3);
-    uniform_int_distribution<uint8_t> direction_range(0, 1);
-
     while (initial_situation.cars.size() < number_of_cars) {
       Car new_car;
 
@@ -116,7 +118,7 @@ Generator::Generator(uint8_t difficulty_level) {
       }
     }
 
-    cout << "Try " << tries << endl;
+    cout << "Try " << tries << " : ";
     Explorer explorer(initial_situation, range.end);
     ++tries;
 
@@ -125,6 +127,12 @@ Generator::Generator(uint8_t difficulty_level) {
       cout << "Generated a solvable puzzle after " << tries << " tries with " <<  explorer.moves <<  " moves : " <<
       endl;
       explorer.print();
+    }
+    else if (!explorer.is_solved()) {
+      cout << "Generated an unsolvable puzzle..." << endl;
+    }
+    else {
+      cout << "Generate a puzzle which does not cover constraint (" << explorer.moves << " moves)" << endl;
     }
   }
 
