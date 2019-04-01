@@ -4,17 +4,14 @@
 #include "Situation.h"
 #include "Explorer.h"
 
-using namespace std;
-
 bool Range::is_between(int m) {
   return m >= start && m <= end;
 }
 
 Generator::Generator(uint8_t difficulty_level) {
-//#ifndef DEBUG
-  std::random_device random;
-  generator.seed(random());
-//#endif
+  random_device random;
+  random_generator.seed(random());
+
   struct timeval tv1{}, tv2{};
 
   if (gettimeofday(&tv1, nullptr) != 0) {
@@ -22,64 +19,91 @@ Generator::Generator(uint8_t difficulty_level) {
     exit(EXIT_FAILURE);
   }
 
-  Range range;
-
-  bool generating = true;
-  int tries = 1;
-
   switch (difficulty_level) {
     case 1: {
       uniform_int_distribution<uint8_t> lvl1_moves_cars(3, 5);
-      number_of_cars = lvl1_moves_cars(generator);
+      number_of_cars = lvl1_moves_cars(random_generator);
       range = Range{1, 10};
       break;
     }
     case 2: {
       uniform_int_distribution<uint8_t> lvl2_moves_cars(5, 7);
-      number_of_cars = lvl2_moves_cars(generator);
+      number_of_cars = lvl2_moves_cars(random_generator);
       range = Range{11, 20};
       break;
     }
     case 3: {
       uniform_int_distribution<uint8_t> lvl3_moves_cars(7, 9);
-      number_of_cars = lvl3_moves_cars(generator);
+      number_of_cars = lvl3_moves_cars(random_generator);
       range = Range{21, 30};
       break;
     }
     case 4: {
       uniform_int_distribution<uint8_t> lvl4_moves_cars(10, 13);
-      number_of_cars = lvl4_moves_cars(generator);
+      number_of_cars = lvl4_moves_cars(random_generator);
       range = Range{31, 40};
       break;
     }
     default:break;
   }
 
+  cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range
+      .end << " moves." << endl;
+
+  int number_of_threads = std::thread::hardware_concurrency();
+
+  vector<thread> threads;
+
+  for (int i = 0; i < number_of_threads; i++) {
+    threads.emplace_back(thread(generate, ref(*this), i));
+  }
+
+  for (auto &thread: threads) {
+    thread.join();
+  }
+
+  if (gettimeofday(&tv2, nullptr) != 0) {
+    perror("gettimeofday");
+    exit(EXIT_FAILURE);
+  }
+
+  double time_spent = timevalsub(&tv1, &tv2);
+
+  cout << "Generated puzzle in " << time_spent << endl;
+}
+
+void generate(Generator &generator, int n) {
   uniform_int_distribution<uint8_t> position_range(0, SIZE - 1);
   uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
   uniform_int_distribution<uint8_t> length_range(2, 3);
   uniform_int_distribution<uint8_t> direction_range(0, 1);
 
-  cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range
-  .end << " moves." << endl;
+  while (true) {
+    {
+      unique_lock<std::mutex> lk(generator.m);
 
-  while (generating) {
+      if (!generator.generating) {
+        return;
+      }
+    }
+
     Situation initial_situation;
-    while (initial_situation.cars.size() < number_of_cars) {
+
+    while (initial_situation.cars.size() < generator.number_of_cars) {
       Car new_car;
 
       if (initial_situation.cars.empty()) {
-        new_car = Car(target_line_range(generator),
+        new_car = Car(target_line_range(generator.random_generator),
                       SIZE - 2,
                       2,
                       Plane::HORIZONTAL);
       } else {
-        new_car = Car(position_range(generator),
-                      position_range(generator),
-                      length_range(generator),
+        new_car = Car(position_range(generator.random_generator),
+                      position_range(generator.random_generator),
+                      length_range(generator.random_generator),
                       direction_range
-                          (generator) ? Plane::HORIZONTAL
-                                      : Plane::VERTICAL);
+                          (generator.random_generator) ? Plane::HORIZONTAL
+                                                       : Plane::VERTICAL);
       }
 
       bool valid = true;
@@ -118,31 +142,34 @@ Generator::Generator(uint8_t difficulty_level) {
       }
     }
 
-    cout << "Try " << tries << " : ";
-    Explorer explorer(initial_situation, range.end);
-    ++tries;
+    Explorer explorer(initial_situation, generator.range.end);
 
-    if (explorer.is_solved() && range.is_between(explorer.moves)) {
-      generating = false;
-      cout << "Generated a solvable puzzle after " << tries << " tries with " <<  explorer.moves <<  " moves : " <<
-      endl;
-      explorer.print();
-    }
-    else if (!explorer.is_solved()) {
-      cout << "Generated an unsolvable puzzle..." << endl;
-    }
-    else {
-      cout << "Generate a puzzle which does not cover constraint (" << explorer.moves << " moves)" << endl;
+    {
+      std::unique_lock<std::mutex> lk(generator.m);
+      cout << "[Thread " << n <<  "] Try " << generator.tries << " : ";
+
+      ++generator.tries;
+
+      if (explorer.is_solved() && generator.range.is_between(explorer.moves)) {
+        generator.generating = false;
+        cout << "Generated a solvable puzzle after " << generator.tries << " tries with " << explorer.moves
+             << " moves : "
+             <<
+             endl;
+        explorer.print();
+      } else if (!explorer.is_solved()) {
+        cout << "Generated an unsolvable puzzle ("
+             << explorer.state_explored
+             << " explored states, "
+             << explorer.moves
+             << " moves)"
+             << endl;
+      } else {
+        cout << "Generate a puzzle which does not cover constraint ("
+             << explorer.state_explored
+             << " explored states, "
+             << explorer.moves << " moves)" << endl;
+      }
     }
   }
-
-  if (gettimeofday(&tv2, nullptr) != 0) {
-    perror("gettimeofday");
-    exit(EXIT_FAILURE);
-  }
-
-  double time_spent = timevalsub(&tv1, &tv2);
-
-  cout << "Generated puzzle in " << time_spent << endl;
-
 }
