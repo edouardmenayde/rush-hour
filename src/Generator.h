@@ -26,6 +26,7 @@ class Generator {
   Range range;
   bool generating = true;
   int tries = 1;
+  const int difficulty_level;
 
   explicit Generator(uint8_t difficulty_level);
 };

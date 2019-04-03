@@ -55,9 +55,11 @@ class Situation {
 
   explicit Situation();
 
-  explicit Situation(string filename);
+  explicit Situation(const string filename);
 
   explicit Situation(const Situation &old_situation, const Move &move);
+
+  void save (const string filename);
 
   bool is_solution();
 

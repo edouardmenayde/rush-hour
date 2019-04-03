@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "utils.h"
 #include "Generator.h"
 #include "Situation.h"
@@ -8,7 +9,12 @@ bool Range::is_between(int m) {
   return m >= start && m <= end;
 }
 
-Generator::Generator(uint8_t difficulty_level) {
+uniform_int_distribution<uint8_t> position_range(0, SIZE - 1);
+uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
+uniform_int_distribution<uint8_t> length_range(2, 3);
+uniform_int_distribution<uint8_t> direction_range(0, 1);
+
+Generator::Generator(uint8_t d) : difficulty_level(d) {
   random_device random;
   random_generator.seed(random());
 
@@ -29,19 +35,19 @@ Generator::Generator(uint8_t difficulty_level) {
     case 2: {
       uniform_int_distribution<uint8_t> lvl2_moves_cars(5, 7);
       number_of_cars = lvl2_moves_cars(random_generator);
-      range = Range{11, 20};
+      range = Range{10, 20};
       break;
     }
     case 3: {
-      uniform_int_distribution<uint8_t> lvl3_moves_cars(7, 9);
+      uniform_int_distribution<uint8_t> lvl3_moves_cars(11, 13);
       number_of_cars = lvl3_moves_cars(random_generator);
-      range = Range{21, 30};
+      range = Range{20, 30};
       break;
     }
     case 4: {
-      uniform_int_distribution<uint8_t> lvl4_moves_cars(10, 13);
+      uniform_int_distribution<uint8_t> lvl4_moves_cars(11, 13);
       number_of_cars = lvl4_moves_cars(random_generator);
-      range = Range{31, 40};
+      range = Range{30, 40};
       break;
     }
     default:break;
@@ -53,6 +59,7 @@ Generator::Generator(uint8_t difficulty_level) {
   int number_of_threads = std::thread::hardware_concurrency();
 
   vector<thread> threads;
+  threads.reserve(number_of_threads);
 
   for (int i = 0; i < number_of_threads; i++) {
     threads.emplace_back(thread(generate, ref(*this), i));
@@ -73,20 +80,7 @@ Generator::Generator(uint8_t difficulty_level) {
 }
 
 void generate(Generator &generator, int n) {
-  uniform_int_distribution<uint8_t> position_range(0, SIZE - 1);
-  uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
-  uniform_int_distribution<uint8_t> length_range(2, 3);
-  uniform_int_distribution<uint8_t> direction_range(0, 1);
-
   while (true) {
-    {
-      unique_lock<std::mutex> lk(generator.m);
-
-      if (!generator.generating) {
-        return;
-      }
-    }
-
     Situation initial_situation;
 
     while (initial_situation.cars.size() < generator.number_of_cars) {
@@ -144,31 +138,32 @@ void generate(Generator &generator, int n) {
 
     Explorer explorer(initial_situation, generator.range.end);
 
+    int tries;
+
     {
       std::unique_lock<std::mutex> lk(generator.m);
-      cout << "[Thread " << n <<  "] Try " << generator.tries << " : ";
+
+      tries = generator.tries;
 
       ++generator.tries;
 
       if (explorer.is_solved() && generator.range.is_between(explorer.moves)) {
         generator.generating = false;
-        cout << "Generated a solvable puzzle after " << generator.tries << " tries with " << explorer.moves
-             << " moves : "
-             <<
-             endl;
-        explorer.print();
-      } else if (!explorer.is_solved()) {
-        cout << "Generated an unsolvable puzzle ("
-             << explorer.state_explored
-             << " explored states, "
+        explorer.solution->situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+            "_" + to_string(explorer.moves) + "_" + to_string(generator.number_of_cars) + "_" + to_string(explorer
+                                                                                                              .time_spent)
+                                              + ".txt");
+        cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
              << explorer.moves
-             << " moves)"
+             << " moves, "
+             << explorer.time_spent
+             << "s)"
              << endl;
-      } else {
-        cout << "Generate a puzzle which does not cover constraint ("
-             << explorer.state_explored
-             << " explored states, "
-             << explorer.moves << " moves)" << endl;
+        explorer.print();
+      }
+
+      if (!generator.generating) {
+        break;
       }
     }
   }

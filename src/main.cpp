@@ -4,7 +4,7 @@
 #include "Generator.h"
 
 int main() {
-  Generator generator(2);
+  Generator generator(4);
 
   cout << "Plane: " << sizeof(Plane) << "B" << endl;
   cout << "Direction: " << sizeof(Direction) << "B" << endl;

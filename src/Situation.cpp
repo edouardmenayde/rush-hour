@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -23,7 +24,7 @@ ostream &operator<<(ostream &os, const Move &move) {
 
 // Situation
 
-Situation::Situation(string filename) {
+Situation::Situation(const string filename) {
   ifstream file;
 
   file.open(filename);
@@ -203,4 +204,25 @@ void Situation::reset_parking() {
       parking.at((unsigned long) i).at((unsigned long) j) = -1;
     }
   }
+}
+
+void Situation::save(const string filename) {
+  ofstream file;
+
+  file.open(filename);
+
+  if (file.fail()) {
+    cerr << "Could not open file `" << filename << "`." << endl;
+  }
+
+  const string SPACE = " ";
+
+  file << (int) exit.line << SPACE << (int) exit.column << endl;
+
+  for (const auto &car : cars) {
+    file << (int) car.line << SPACE << (int) car.column << SPACE << (int) car.length << SPACE << (car.plane ==
+        Plane::HORIZONTAL ? 1 : 0) << endl;
+  }
+
+  file.close();
 }

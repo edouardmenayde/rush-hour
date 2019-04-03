@@ -7,13 +7,13 @@ class Explorer {
  private:
   History history;
 
-  HistoryNode *solution = nullptr;
-
   const int moves_limit = -1;
 
   void explore(vector<HistoryNode *> history_node);
 
  public:
+  HistoryNode *solution = nullptr;
+
   double time_spent = 0;
 
   int unique_state_explored = 0;

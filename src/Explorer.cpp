@@ -58,7 +58,7 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
 
   while (exploring) {
     if (moves_limit != -1 && moves > moves_limit) {
-      cout << "Stopping after " << moves << "moves (limit is " << moves_limit << ")." << endl;
+      cout << "Stopping after " << moves << " moves (limit is " << moves_limit << ")." << endl;
       return;
     }
 
