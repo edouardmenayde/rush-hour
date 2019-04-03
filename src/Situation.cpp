@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -23,7 +24,7 @@ ostream &operator<<(ostream &os, const Move &move) {
 
 // Situation
 
-Situation::Situation(string filename) {
+Situation::Situation(const string filename) {
   ifstream file;
 
   file.open(filename);
@@ -55,18 +56,16 @@ Situation::Situation(string filename) {
 }
 
 void Situation::print() {
-  const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
-
   for (int8_t i = 0; i < SIZE; i++) {
     for (int8_t j = 0; j < SIZE; j++) {
       if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
         cout << "  ";
       } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
-        cout << termcolor::yellow << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] <<
+        cout << termcolor::blue << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] <<
              termcolor::reset
              << " ";
       } else {
-        cout << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
+        cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
       }
     }
     if (i + 1 < SIZE) {
@@ -76,20 +75,18 @@ void Situation::print() {
 }
 
 void Situation::print(Move &move) {
-  const string alphabet = "=BCDEFGHIJKLMNOPQRSTUVWXYZ";
-
   for (int8_t i = 0; i < SIZE; i++) {
     for (int8_t j = 0; j < SIZE; j++) {
       if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
         cout << "  ";
       } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
-        cout << termcolor::blue << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)]
+        cout << termcolor::blue << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)]
              << termcolor::reset << " ";
       } else if (parking.at((unsigned long) i).at((unsigned long) j) == move.car_index) {
-        cout << termcolor::yellow << termcolor::bold << alphabet[parking.at((unsigned long) i).at((unsigned long) j)]
+        cout << termcolor::yellow << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)]
              << termcolor::reset << " ";
       } else {
-        cout << alphabet[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
+        cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
       }
     }
     if (i + 1 < SIZE) {
@@ -102,7 +99,6 @@ vector<Move> Situation::get_moves() {
   vector<Move> moves;
   uint8_t car_number = 0;
   const uint8_t MAX_MOVES = 4;
-  const int8_t EMPTY = -1;
   for (auto &car : cars) {
     if (car.plane == Plane::VERTICAL) {
       {
@@ -148,12 +144,7 @@ vector<Move> Situation::get_moves() {
 }
 
 void Situation::compute_parking() {
-  for (int8_t i = 0; i < SIZE; i++) {
-    for (int8_t j = 0; j < SIZE; j++) {
-      parking.at((unsigned long) i).at((unsigned long) j) = -1;
-    }
-  }
-
+  reset_parking();
   int8_t i = 0;
   for (const auto &car : cars) {
     if (car.plane == Plane::HORIZONTAL) {
@@ -203,4 +194,35 @@ bool Situation::operator==(const Situation &rhs) const {
 
 bool Situation::operator!=(const Situation &rhs) const {
   return !(rhs == *this);
+}
+Situation::Situation() {
+  reset_parking();
+}
+void Situation::reset_parking() {
+  for (int8_t i = 0; i < SIZE; i++) {
+    for (int8_t j = 0; j < SIZE; j++) {
+      parking.at((unsigned long) i).at((unsigned long) j) = -1;
+    }
+  }
+}
+
+void Situation::save(const string filename) {
+  ofstream file;
+
+  file.open(filename);
+
+  if (file.fail()) {
+    cerr << "Could not open file `" << filename << "`." << endl;
+  }
+
+  const string SPACE = " ";
+
+  file << (int) exit.line << SPACE << (int) exit.column << endl;
+
+  for (const auto &car : cars) {
+    file << (int) car.line << SPACE << (int) car.column << SPACE << (int) car.length << SPACE << (car.plane ==
+        Plane::HORIZONTAL ? 1 : 0) << endl;
+  }
+
+  file.close();
 }

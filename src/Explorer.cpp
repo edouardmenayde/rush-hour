@@ -1,60 +1,52 @@
 #include <iostream>
-#include "Explorer.h"
-#include <sys/time.h>
 #include "deps/termcolor.hpp"
+#include "Explorer.h"
+#include "utils.h"
 
-double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
-  double res = 0;
-  res = tv2->tv_sec - tv1->tv_sec;
-  res += (tv2->tv_usec - tv1->tv_usec) * 1.0 / 1000000;
-  return res;
-}
-
-Explorer::Explorer(Situation &root) : history(History(root)) {
+Explorer::Explorer(Situation &root, int m) : history(History(root)), moves_limit(m) {
   vector<HistoryNode *> nodes;
   nodes.push_back(history.root);
 
   struct timeval tv1{}, tv2{};
-  int err;
 
-  err = gettimeofday(&tv1, nullptr);
-  if (err != 0) {
+  if (gettimeofday(&tv1, nullptr) != 0) {
     perror("gettimeofday");
     exit(EXIT_FAILURE);
   }
 
   explore(nodes);
 
-  err = gettimeofday(&tv2, nullptr);
-  if (err != 0) {
+  if (gettimeofday(&tv2, nullptr) != 0) {
     perror("gettimeofday");
     exit(EXIT_FAILURE);
   }
 
-  double amount_of_time = timevalsub(&tv1, &tv2);
+  time_spent = timevalsub(&tv1, &tv2);
+}
 
-  vector<HistoryNode *> history(0);
+const void Explorer::print() {
+  vector<HistoryNode *> solution_history(0);
 
   HistoryNode *current_node = solution;
 
   while (current_node != nullptr) {
-    history.push_back(current_node);
+    solution_history.push_back(current_node);
     current_node = current_node->parent;
   }
 
   cout << "Found a solution :" << endl
-       << "- in " << termcolor::red << amount_of_time << "s" << termcolor::reset << endl
+       << "- in " << termcolor::red << time_spent << "s" << termcolor::reset << endl
        << "- exploring " << termcolor::red << state_explored << termcolor::reset << " states (" << unique_state_explored
        << " uniques)" << endl
-       << "- in " << termcolor::red << static_cast<int>(history.size() - 1) << termcolor::reset << " moves" << endl
+       << "- in " << termcolor::red << static_cast<int>(solution_history.size() - 1) << termcolor::reset << " moves" << endl
        << endl;
 
-  for (int j = static_cast<int>(history.size() - 1); j >= 0; j--) {
-    if (auto m = history[j]->move) {
-      history[j]->situation.print(*m);
+  for (int j = static_cast<int>(solution_history.size() - 1); j >= 0; j--) {
+    if (auto m = solution_history[j]->move) {
+      solution_history[j]->situation.print(*m);
     }
     else {
-      history[j]->situation.print();
+      solution_history[j]->situation.print();
     }
     cout << endl;
     cout << endl;
@@ -65,10 +57,15 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
   bool exploring = true;
 
   while (exploring) {
+    if (moves_limit != -1 && moves > moves_limit) {
+      cout << "Stopping after " << moves << " moves (limit is " << moves_limit << ")." << endl;
+      return;
+    }
+
+    moves++;
     vector<HistoryNode *> new_nodes;
     for (auto &node : nodes) {
-      auto moves = node->situation.get_moves();
-      for (auto &move : moves) {
+      for (auto &move : node->situation.get_moves()) {
         Situation new_situation(node->situation, move);
         state_explored++;
 
@@ -92,4 +89,7 @@ void Explorer::explore(vector<HistoryNode *> nodes) {
 
     exploring = !new_nodes.empty();
   }
+}
+const bool Explorer::is_solved() {
+  return solution != nullptr;
 }

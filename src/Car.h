@@ -18,6 +18,7 @@ class Car {
   Plane plane = Plane::HORIZONTAL;
 
   Car(uint8_t l, uint8_t c, uint8_t lgth, Plane p) : line(l), column(c), length(lgth), plane(p) {}
+  Car() {}
 
   bool operator==(const Car &rhs) const {
     return line == rhs.line &&
