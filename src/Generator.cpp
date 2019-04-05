@@ -155,9 +155,8 @@ void generate(Generator &generator, int n) {
           }
 
           situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
-              "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_" + to_string(explorer
-                                                                                                                      .time_spent)
-                                              + ".txt");
+              "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_"
+                             + to_string(explorer.time_spent) + ".txt");
           cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
                << explorer.move_number
                << " moves, "
@@ -166,6 +165,8 @@ void generate(Generator &generator, int n) {
                << endl;
           explorer.print();
         }
+      } else {
+        cout << "[Thread " << n << "] Try " << generator.tries << endl;
       }
 
       if (!generator.generating) {
