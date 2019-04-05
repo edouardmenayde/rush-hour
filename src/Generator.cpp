@@ -88,7 +88,7 @@ void generate(Generator &generator, int n) {
 
       if (initial_situation.cars.empty()) {
         new_car = Car(target_line_range(generator.random_generator),
-                      SIZE - 2,
+                      0,
                       2,
                       Plane::HORIZONTAL);
       } else {
@@ -129,7 +129,7 @@ void generate(Generator &generator, int n) {
 
       if (valid) {
         if (initial_situation.cars.empty()) {
-          initial_situation.exit = Vector2{new_car.line, 0};
+          initial_situation.exit = Vector2{new_car.line, 5};
         }
         initial_situation.cars.push_back(new_car);
         initial_situation.compute_parking();
@@ -146,15 +146,8 @@ void generate(Generator &generator, int n) {
       if (explorer.is_solved() && generator.range.is_between(explorer.move_number)) {
         if (auto moves = explorer.solution) {
           generator.generating = false;
-          auto situation = initial_situation;
-          for (const auto &m : *moves) {
-            cout << endl << endl;
-            Situation new_situation = Situation(situation, m);
-            new_situation.print(m);
-            situation = new_situation;
-          }
 
-          situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+          initial_situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
               "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_"
                              + to_string(explorer.time_spent) + ".txt");
           cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
