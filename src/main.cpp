@@ -4,12 +4,18 @@
 #include "Generator.h"
 
 int main() {
-  Generator generator(4);
+  Situation test("../test/support/puzzle.txt");
+  Explorer explorer(test);
+  explorer.print();
+//  Generator generator(4);
 
-  cout << "Plane: " << sizeof(Plane) << "B" << endl;
+  cout << "uint8: " << sizeof(uint8_t) << "B" << endl;
+  cout << "int8: " << sizeof(int8_t) << "B" << endl;
   cout << "Direction: " << sizeof(Direction) << "B" << endl;
-  cout << "Car: " << sizeof(Car) << "B" << endl;
   cout << "Move: " << sizeof(Move) << "B" << endl;
+  cout << "Moves: " << sizeof(Moves) << "B" << endl;
+  cout << "Plane: " << sizeof(Plane) << "B" << endl;
+  cout << "Car: " << sizeof(Car) << "B" << endl;
   cout << "Vector2: "<< sizeof(Vector2) << "B" << endl;
   cout << "Parking: " << sizeof(Parking) << "B" << endl;
   cout << "Cars: " <<sizeof(Cars) << "B" << endl;

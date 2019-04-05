@@ -55,7 +55,7 @@ Situation::Situation(const string filename) {
   compute_parking();
 }
 
-void Situation::print() {
+void Situation::print() const {
   for (int8_t i = 0; i < SIZE; i++) {
     for (int8_t j = 0; j < SIZE; j++) {
       if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
@@ -74,7 +74,7 @@ void Situation::print() {
   }
 }
 
-void Situation::print(Move &move) {
+void Situation::print(const Move &move) const {
   for (int8_t i = 0; i < SIZE; i++) {
     for (int8_t j = 0; j < SIZE; j++) {
       if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
@@ -95,7 +95,7 @@ void Situation::print(Move &move) {
   }
 }
 
-vector<Move> Situation::get_moves() {
+vector<Move> Situation::get_moves() const {
   vector<Move> moves;
   uint8_t car_number = 0;
   const uint8_t MAX_MOVES = 4;
@@ -184,7 +184,7 @@ Situation::Situation(
   compute_parking();
 }
 
-bool Situation::is_solution() {
+bool Situation::is_solution() const {
   return parking.at(exit.line).at(exit.column) == TARGET_CAR_INDEX;
 }
 

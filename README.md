@@ -17,15 +17,21 @@ We can see `History:exists` is the function were our program spends most of the 
 
 ![](doc/mprof01.png)
 
-
 ## V2
 
 ![](doc/mprof02-01.png)
 
-After removing the vector moves of `Situation` to provide it just when needed in the `Explorer` via a return memory 
-and use `short` instead of `int` and do not exceed 3.5MiB as we previously did.
+This graph shows the drop of memory after moving out the `vector of possible moves` from the situation to
+only computing it and returning it when needed.
 
 ![](doc/mprof02-02.png)
+
+This graph shows the drop of memory after switching all ints / shorts to int8_t.
+
+## V3
+
+![](doc/mprof03-01.png)
+This graph shows the increase in memory use after switching to a map to store the situations.
 
 ## Bugs
 

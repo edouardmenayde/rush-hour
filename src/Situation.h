@@ -13,8 +13,8 @@ using namespace std;
 
 class Move {
  public:
-  uint8_t car_index; // We know we will never have more than 255 cars
   Direction direction;
+  uint8_t car_index; // We know we will never have more than 255 cars
   uint8_t steps; // We will never have more than 255 steps
 
   Move(uint8_t i, Direction d, uint8_t s) : car_index(i), direction(d), steps(s) {}
@@ -29,6 +29,22 @@ const uint8_t SIZE = 6;
 const int8_t EMPTY = -1;
 
 typedef array<array<int8_t, SIZE>, SIZE> Parking;
+
+struct parking_hash {
+  template <class Parking>
+  size_t operator()(const Parking &parking) const {
+    string parking_key;
+
+    for (const auto &lane : parking) {
+      for (const auto &spot : lane) {
+        parking_key.push_back(spot);
+      }
+    }
+
+    return hash<string>()(parking_key);
+  }
+};
+
 typedef vector<Car> Cars;
 
 const string ALPHABET = "=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -59,19 +75,19 @@ class Situation {
 
   explicit Situation(const Situation &old_situation, const Move &move);
 
-  void save (const string filename);
+  void save(const string filename);
 
-  bool is_solution();
+  bool is_solution() const;
 
-  void print();
+  void print() const;
 
-  void print(Move &move);
+  void print(const Move &move) const;
 
   bool operator==(const Situation &rhs) const;
 
   bool operator!=(const Situation &rhs) const;
 
-  vector<Move> get_moves();
+  vector<Move> get_moves() const;
 
   void compute_parking();
 

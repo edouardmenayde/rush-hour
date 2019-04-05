@@ -138,28 +138,34 @@ void generate(Generator &generator, int n) {
 
     Explorer explorer(initial_situation, generator.range.end);
 
-    int tries;
-
     {
       std::unique_lock<std::mutex> lk(generator.m);
 
-      tries = generator.tries;
-
       ++generator.tries;
 
-      if (explorer.is_solved() && generator.range.is_between(explorer.moves)) {
-        generator.generating = false;
-        explorer.solution->situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
-            "_" + to_string(explorer.moves) + "_" + to_string(generator.number_of_cars) + "_" + to_string(explorer
-                                                                                                              .time_spent)
+      if (explorer.is_solved() && generator.range.is_between(explorer.move_number)) {
+        if (auto moves = explorer.solution) {
+          generator.generating = false;
+          auto situation = initial_situation;
+          for (const auto &m : *moves) {
+            cout << endl << endl;
+            Situation new_situation = Situation(situation, m);
+            new_situation.print(m);
+            situation = new_situation;
+          }
+
+          situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+              "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_" + to_string(explorer
+                                                                                                                      .time_spent)
                                               + ".txt");
-        cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
-             << explorer.moves
-             << " moves, "
-             << explorer.time_spent
-             << "s)"
-             << endl;
-        explorer.print();
+          cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
+               << explorer.move_number
+               << " moves, "
+               << explorer.time_spent
+               << "s)"
+               << endl;
+          explorer.print();
+        }
       }
 
       if (!generator.generating) {
