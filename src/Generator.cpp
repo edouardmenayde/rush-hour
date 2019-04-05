@@ -88,7 +88,7 @@ void generate(Generator &generator, int n) {
 
       if (initial_situation.cars.empty()) {
         new_car = Car(target_line_range(generator.random_generator),
-                      SIZE - 2,
+                      0,
                       2,
                       Plane::HORIZONTAL);
       } else {
@@ -129,7 +129,7 @@ void generate(Generator &generator, int n) {
 
       if (valid) {
         if (initial_situation.cars.empty()) {
-          initial_situation.exit = Vector2{new_car.line, 0};
+          initial_situation.exit = Vector2{new_car.line, 5};
         }
         initial_situation.cars.push_back(new_car);
         initial_situation.compute_parking();
@@ -138,28 +138,28 @@ void generate(Generator &generator, int n) {
 
     Explorer explorer(initial_situation, generator.range.end);
 
-    int tries;
-
     {
       std::unique_lock<std::mutex> lk(generator.m);
 
-      tries = generator.tries;
-
       ++generator.tries;
 
-      if (explorer.is_solved() && generator.range.is_between(explorer.moves)) {
-        generator.generating = false;
-        explorer.solution->situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
-            "_" + to_string(explorer.moves) + "_" + to_string(generator.number_of_cars) + "_" + to_string(explorer
-                                                                                                              .time_spent)
-                                              + ".txt");
-        cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
-             << explorer.moves
-             << " moves, "
-             << explorer.time_spent
-             << "s)"
-             << endl;
-        explorer.print();
+      if (explorer.is_solved() && generator.range.is_between(explorer.move_number)) {
+        if (auto moves = explorer.solution) {
+          generator.generating = false;
+
+          initial_situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+              "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_"
+                             + to_string(explorer.time_spent) + ".txt");
+          cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
+               << explorer.move_number
+               << " moves, "
+               << explorer.time_spent
+               << "s)"
+               << endl;
+          explorer.print();
+        }
+      } else {
+        cout << "[Thread " << n << "] Try " << generator.tries << endl;
       }
 
       if (!generator.generating) {

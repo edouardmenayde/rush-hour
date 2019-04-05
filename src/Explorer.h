@@ -1,18 +1,24 @@
 #ifndef RUSH_HOUR_EXPLORER_H
 #define RUSH_HOUR_EXPLORER_H
 
-#include "History.h"
+#include <vector>
+#include <unordered_set>
+#include <list>
+#include "Situation.h"
+
+typedef list<Move> Moves;
 
 class Explorer {
  private:
-  History history;
-
   const int moves_limit = -1;
 
-  void explore(vector<HistoryNode *> history_node);
+  void explore(vector<pair<Situation, Moves>> &situations);
 
+  unordered_set<Parking, parking_hash> history;
  public:
-  HistoryNode *solution = nullptr;
+  Situation initial_situation;
+
+  optional<Moves> solution;
 
   double time_spent = 0;
 
@@ -20,13 +26,13 @@ class Explorer {
 
   int state_explored = 0;
 
-  int moves = 0;
+  int move_number = 0;
 
-  explicit Explorer(Situation &root, int moves_limit = -1);
+  explicit Explorer(const Situation &root, int moves_limit = -1);
 
-  const void print();
+  void print() const;
 
-  const bool is_solved();
+  bool is_solved() const;
 };
 
 #endif //RUSH_HOUR_EXPLORER_H
