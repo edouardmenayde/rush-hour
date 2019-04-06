@@ -45,3 +45,6 @@ directly to the bug creating the bad moves in the first place.
 
 ### v0.4
 *Perf improvement* : This graph shows the increase in memory use after switching to a map to store the situations.
+
+### v0.4
+*Perf improvement* : Use `deque` instead of vector to store situations needed to be explored.

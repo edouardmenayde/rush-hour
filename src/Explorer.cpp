@@ -5,7 +5,7 @@
 
 Explorer::Explorer(const Situation &root, int m) : initial_situation(root), moves_limit(m) {
   history.emplace(initial_situation.parking);
-  vector<pair<Situation, Moves>> situations;
+  deque<pair<Situation, Moves>> situations;
   situations.emplace_back(initial_situation, list<Move>());
 
   struct timeval tv1{}, tv2{};
@@ -54,7 +54,7 @@ void Explorer::print() const {
   }
 }
 
-void Explorer::explore(vector<pair<Situation, Moves>> &situations) {
+void Explorer::explore(deque<pair<Situation, Moves>> &situations) {
   bool exploring = true;
 
   while (exploring) {
@@ -64,7 +64,7 @@ void Explorer::explore(vector<pair<Situation, Moves>> &situations) {
     }
 
     move_number++;
-    vector<pair<Situation, Moves>> new_situations;
+    deque<pair<Situation, Moves>> new_situations;
     for (auto &situation : situations) {
       for (const auto &move : situation.first.get_moves()) {
         Situation new_situation(situation.first, move);
