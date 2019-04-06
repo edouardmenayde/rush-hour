@@ -10,7 +10,7 @@ Using `mprof` (provided by package [http://jmdana.github.io/memprof/](http://jmd
 
 ![](doc/perf/rush_hour.svg)
 
-![](doc/memory_usage/graph.png)
+![](doc/memory_usage/graph.svg)
 
 ![](doc/perf/perf01.png)
 
