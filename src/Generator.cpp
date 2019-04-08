@@ -14,7 +14,7 @@ uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
 uniform_int_distribution<uint8_t> length_range(2, 3);
 uniform_int_distribution<uint8_t> direction_range(0, 1);
 
-Generator::Generator(uint8_t d) : difficulty_level(d) {
+Generator::Generator(uint8_t d, string &p) : difficulty_level(d), output_path(p) {
   random_device random;
   random_generator.seed(random());
 
@@ -147,7 +147,7 @@ void generate(Generator &generator, int n) {
         if (auto moves = explorer.solution) {
           generator.generating = false;
 
-          initial_situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+          initial_situation.save(generator.output_path + to_string(generator.difficulty_level) +
               "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_"
                              + to_string(explorer.time_spent) + ".txt");
           cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "

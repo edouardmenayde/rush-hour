@@ -3,7 +3,7 @@
 #include "Explorer.h"
 #include "utils.h"
 
-Explorer::Explorer(const Situation &root, int m) : initial_situation(root), moves_limit(m) {
+Explorer::Explorer(const Situation &root, int m) : moves_limit(m), initial_situation(root) {
   history.emplace(initial_situation.parking);
   deque<pair<Situation, Moves>> situations;
   situations.emplace_back(initial_situation, list<Move>());

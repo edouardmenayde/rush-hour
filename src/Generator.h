@@ -27,10 +27,11 @@ class Generator {
   bool generating = true;
   int tries = 1;
   const int difficulty_level;
+  string output_path;
 
-  explicit Generator(uint8_t difficulty_level);
+  explicit Generator(uint8_t difficulty_level, string &output_path);
 };
 
-static void generate(Generator &generator, int n);
+void generate(Generator &generator, int n);
 
 #endif //RUSH_HOUR_GENERATOR_H

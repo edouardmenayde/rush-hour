@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
     Situation test(args.at(1));
     Explorer explorer(test);
     explorer.print();
-  } else if (args.size() == 2 && args.at(0) == "generate") {
-    Generator(stoi(args.at(1)));
+  } else if (args.size() == 3 && args.at(0) == "generate") {
+    Generator(stoi(args.at(1)), args.at(2));
   } else if (args.size() == 1 && args.at(0) == "info") {
     cout << "uint8: " << sizeof(uint8_t) << "B" << endl;
     cout << "int8: " << sizeof(int8_t) << "B" << endl;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   } else {
     cout << "Usage :" << endl
          << "- ./rush-hour solve <file_path>" << endl
-         << "- ./rush-hour generate <difficulty_level>" << endl
+         << "- ./rush-hour generate <difficulty_level> <output_path>" << endl
          << "- ./rush-hour info" << endl;
   }
 

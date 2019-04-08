@@ -17,7 +17,7 @@ class Move {
   uint8_t car_index; // We know we will never have more than 255 cars
   uint8_t steps; // We will never have more than 255 steps
 
-  Move(uint8_t i, Direction d, uint8_t s) : car_index(i), direction(d), steps(s) {}
+  Move(uint8_t i, Direction d, uint8_t s) : direction(d), car_index(i), steps(s) {}
 
   bool operator==(const Move &rhs) const;
   bool operator!=(const Move &rhs) const;
@@ -31,7 +31,7 @@ const int8_t EMPTY = -1;
 typedef array<array<int8_t, SIZE>, SIZE> Parking;
 
 struct parking_hash {
-  template <class Parking>
+  template<class Parking>
   size_t operator()(const Parking &parking) const {
     string parking_key;
 
