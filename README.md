@@ -82,5 +82,5 @@ directly to the bug creating the bad moves in the first place.
 ### v0.4
 *Perf improvement* : Use set to store explored situations. Results in higher memory use.
 
-### v0.4
+### v0.5
 *Perf improvement* : Use `deque` instead of vector to store situations needed to be explored.
