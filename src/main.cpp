@@ -4,6 +4,16 @@
 #include "Generator.h"
 
 int main(int argc, char *argv[]) {
+  cout << "  _____           _       _                      \n"
+          " |  __ \\         | |     | |                     \n"
+          " | |__) |   _ ___| |__   | |__   ___  _   _ _ __ \n"
+          " |  _  / | | / __| '_ \\  | '_ \\ / _ \\| | | | '__|\n"
+          " | | \\ \\ |_| \\__ \\ | | | | | | | (_) | |_| | |   \n"
+          " |_|  \\_\\__,_|___/_| |_| |_| |_|\\___/ \\__,_|_|   \n"
+          "                                                 \n"
+          " by Edouard Menayde and Guillaume Ortega\n"
+          "--------------------------------------------------" << endl;
+
   vector<string> args(argv + 1, argv + argc);
 
   if (args.size() == 2 && args.at(0) == "solve") {

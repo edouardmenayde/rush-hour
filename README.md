@@ -45,7 +45,7 @@ We can see `History:exists` is the function were our program spends most of the 
 
 ![](doc/perf/perf04.png)
 
-Profiling for version 0.1
+Profiling for version 0.4
 We can see `unordered_set:find` takes less time than `History:exists`.
 
 ## Changelog
