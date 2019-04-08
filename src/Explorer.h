@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_set>
 #include <list>
+#include <deque>
 #include "Situation.h"
 
 typedef list<Move> Moves;
@@ -12,7 +13,7 @@ class Explorer {
  private:
   const int moves_limit = -1;
 
-  void explore(vector<pair<Situation, Moves>> &situations);
+  void explore(deque<pair<Situation, Moves>> &situations);
 
   unordered_set<Parking, parking_hash> history;
  public:
@@ -28,6 +29,11 @@ class Explorer {
 
   int move_number = 0;
 
+  /**
+   * Explore all the possible states from a situation
+    * @param root
+    * @param moves_limit
+    */
   explicit Explorer(const Situation &root, int moves_limit = -1);
 
   void print() const;

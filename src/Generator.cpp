@@ -14,7 +14,7 @@ uniform_int_distribution<uint8_t> target_line_range(1, SIZE - 2);
 uniform_int_distribution<uint8_t> length_range(2, 3);
 uniform_int_distribution<uint8_t> direction_range(0, 1);
 
-Generator::Generator(uint8_t d) : difficulty_level(d) {
+Generator::Generator(uint8_t d, string &p) : difficulty_level(d), output_path(p) {
   random_device random;
   random_generator.seed(random());
 
@@ -56,7 +56,7 @@ Generator::Generator(uint8_t d) : difficulty_level(d) {
   cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range
       .end << " moves." << endl;
 
-  int number_of_threads = std::thread::hardware_concurrency();
+  int number_of_threads = thread::hardware_concurrency();
 
   vector<thread> threads;
   threads.reserve(number_of_threads);
@@ -139,7 +139,7 @@ void generate(Generator &generator, int n) {
     Explorer explorer(initial_situation, generator.range.end);
 
     {
-      std::unique_lock<std::mutex> lk(generator.m);
+      unique_lock<mutex> lk(generator.m);
 
       ++generator.tries;
 
@@ -147,7 +147,7 @@ void generate(Generator &generator, int n) {
         if (auto moves = explorer.solution) {
           generator.generating = false;
 
-          initial_situation.save("../assets/generated_puzzles/" + to_string(generator.difficulty_level) +
+          initial_situation.save(generator.output_path + to_string(generator.difficulty_level) +
               "_" + to_string(explorer.move_number) + "_" + to_string(generator.number_of_cars) + "_"
                              + to_string(explorer.time_spent) + ".txt");
           cout << "[Thread " << n << "] Try " << generator.tries << " : " << "Generated a solvable puzzle in "
