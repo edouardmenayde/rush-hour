@@ -1,6 +1,6 @@
 CXX      = g++
 
-CXXFLAGS  += -g -Wall -std=c++2a -pedantic -pthread -O3 -DNDEBUG
+CXXFLAGS  += -g -Wall -std=c++17 -pedantic -pthread -O3 -DNDEBUG
 
 .DEFAULT_GOAL := all
 
