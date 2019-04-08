@@ -56,7 +56,7 @@ Generator::Generator(uint8_t d, string &p) : difficulty_level(d), output_path(p)
   cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range
       .end << " moves." << endl;
 
-  int number_of_threads = std::thread::hardware_concurrency();
+  int number_of_threads = thread::hardware_concurrency();
 
   vector<thread> threads;
   threads.reserve(number_of_threads);
@@ -139,7 +139,7 @@ void generate(Generator &generator, int n) {
     Explorer explorer(initial_situation, generator.range.end);
 
     {
-      std::unique_lock<std::mutex> lk(generator.m);
+      unique_lock<mutex> lk(generator.m);
 
       ++generator.tries;
 

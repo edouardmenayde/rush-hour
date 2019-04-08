@@ -12,12 +12,12 @@ OBJECTS = $(SOURCES:.cpp=.o)
 	$(CXX) -MMD $(CXXFLAGS) -c $< -o $@
 
 CLEAN_OBJECTS = $(OBJECTS)
-TARGETS = main
+TARGETS = rush-hour
 
-main: $(OBJECTS) $(OBJECTS)
+rush-hour: $(OBJECTS) $(OBJECTS)
 	$(CXX) -pthread $(OBJECTS) -o $@ $(LDFLAGS)
 
-all : main
+all : rush-hour
 
 ########## cleanup ##########
 DEPS = $(CLEAN_OBJECTS:.o=.d)

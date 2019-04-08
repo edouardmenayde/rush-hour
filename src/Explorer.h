@@ -29,6 +29,11 @@ class Explorer {
 
   int move_number = 0;
 
+  /**
+   * Explore all the possible states from a situation
+    * @param root
+    * @param moves_limit
+    */
   explicit Explorer(const Situation &root, int moves_limit = -1);
 
   void print() const;

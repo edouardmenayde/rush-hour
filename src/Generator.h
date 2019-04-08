@@ -7,6 +7,9 @@
 
 using namespace std;
 
+/**
+ * Values authorized between the start and the end included
+ */
 class Range {
  public:
   int start = 0;

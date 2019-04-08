@@ -30,6 +30,11 @@ const int8_t EMPTY = -1;
 
 typedef array<array<int8_t, SIZE>, SIZE> Parking;
 
+
+/**
+ * Concatenate all the car indexes' of the 2D array of cars into the string and hashes it using standard c++ hashing
+ * function.
+ */
 struct parking_hash {
   template<class Parking>
   size_t operator()(const Parking &parking) const {
@@ -55,7 +60,7 @@ const string ALPHABET = "=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 class Situation {
  public:
   /**
-   * Array containing all the cars in the parking including the one we want to move to the exit which is represented by a boolean.
+   * Array containing all the cars in the parking including the one we want to move to the exit which is the first one.
    */
   Cars cars;
 
