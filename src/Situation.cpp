@@ -6,8 +6,9 @@
 #include "Situation.h"
 #include "deps/termcolor.hpp"
 
-// Move
+const string SPACE = " ";
 
+// Move
 bool Move::operator==(const Move &rhs) const {
   return car_index == rhs.car_index &&
       direction == rhs.direction;
@@ -24,13 +25,14 @@ ostream &operator<<(ostream &os, const Move &move) {
 
 // Situation
 
-Situation::Situation(const string filename) {
+Situation::Situation(const string &file_path) {
   ifstream file;
 
-  file.open(filename);
+  file.open(file_path);
 
   if (file.fail()) {
-    cerr << "Could not read file `" << filename << "`." << endl;
+    perror("Could not read file.");
+    std::exit(EXIT_FAILURE);
   }
 
   string line;
@@ -56,37 +58,31 @@ Situation::Situation(const string filename) {
 }
 
 void Situation::print() const {
-  for (int8_t i = 0; i < SIZE; i++) {
-    for (int8_t j = 0; j < SIZE; j++) {
-      if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
-        cout << "  ";
-      } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
-        cout << termcolor::blue << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] <<
-             termcolor::reset
-             << " ";
-      } else {
-        cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
-      }
-    }
-    if (i + 1 < SIZE) {
-      cout << endl;
-    }
-  }
+  print(optional<Move>());
 }
 
 void Situation::print(const Move &move) const {
+  print(optional<Move>(move));
+}
+
+void Situation::print(optional<Move> move) const {
   for (int8_t i = 0; i < SIZE; i++) {
     for (int8_t j = 0; j < SIZE; j++) {
       if (parking.at((unsigned long) i).at((unsigned long) j) == -1) {
-        cout << "  ";
+        cout << SPACE << SPACE;
       } else if (parking.at((unsigned long) i).at((unsigned long) j) == 0) {
         cout << termcolor::blue << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)]
-             << termcolor::reset << " ";
-      } else if (parking.at((unsigned long) i).at((unsigned long) j) == move.car_index) {
-        cout << termcolor::yellow << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)]
-             << termcolor::reset << " ";
+             << termcolor::reset << SPACE;
+      } else if (auto m = move) {
+        if (parking.at((unsigned long) i).at((unsigned long) j) == (*m).car_index) {
+          cout << termcolor::yellow << termcolor::bold << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)]
+               << termcolor::reset << SPACE;
+        }
+        else {
+          cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << SPACE;
+        }
       } else {
-        cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << " ";
+        cout << ALPHABET[parking.at((unsigned long) i).at((unsigned long) j)] << SPACE;
       }
     }
     if (i + 1 < SIZE) {
@@ -206,16 +202,15 @@ void Situation::reset_parking() {
   }
 }
 
-void Situation::save(const string filename) {
+void Situation::save(const string &file_path) {
   ofstream file;
 
-  file.open(filename);
+  file.open(file_path);
 
   if (file.fail()) {
-    cerr << "Could not open file `" << filename << "`." << endl;
+    perror("Could not open file.");
+    std::exit(EXIT_FAILURE);
   }
-
-  const string SPACE = " ";
 
   file << (int) exit.line << SPACE << (int) exit.column << endl;
 
