@@ -1,8 +1,8 @@
 #include "utils.h"
 
-double timevalsub(struct timeval *tv1, const struct timeval *tv2) {
+double timevalsub(const struct timeval *start, const struct timeval *end) {
   double res = 0;
-  res = tv2->tv_sec - tv1->tv_sec;
-  res += (tv2->tv_usec - tv1->tv_usec) * 1.0 / 1000000;
+  res = end->tv_sec - start->tv_sec;
+  res += (end->tv_usec - start->tv_usec) * 1.0 / 1000000;
   return res;
 }

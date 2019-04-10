@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <array>
-#include "Vector2.h"
-#include "Car.h"
 #include <string>
 #include <ostream>
+#include <optional>
+#include "Vector2.h"
+#include "Car.h"
 #include "Direction.h"
 
 using namespace std;
@@ -29,7 +30,6 @@ const uint8_t SIZE = 6;
 const int8_t EMPTY = -1;
 
 typedef array<array<int8_t, SIZE>, SIZE> Parking;
-
 
 /**
  * Concatenate all the car indexes' of the 2D array of cars into the string and hashes it using standard c++ hashing
@@ -58,6 +58,8 @@ const string ALPHABET = "=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  * A parking situation with all the cars in it and the exit.
  */
 class Situation {
+ private:
+  void print(optional<Move> move) const;
  public:
   /**
    * Array containing all the cars in the parking including the one we want to move to the exit which is the first one.
@@ -76,26 +78,48 @@ class Situation {
 
   explicit Situation();
 
-  explicit Situation(const string filename);
+  explicit Situation(const string &file_path);
 
   explicit Situation(const Situation &old_situation, const Move &move);
 
-  void save(const string filename);
+  /**
+   * Saves the situation to the given file
+   * @param filename
+   */
+  void save(const string &file_path);
 
   bool is_solution() const;
 
+  /**
+   * Prints the situation in a human readable format.
+   */
   void print() const;
 
+  /**
+   * Prints the situation in a human readable format focusing on the move.
+   */
   void print(const Move &move) const;
 
   bool operator==(const Situation &rhs) const;
 
   bool operator!=(const Situation &rhs) const;
 
+  /**
+   * Get all possible moves from this situation.
+   *
+   * @return {legal moves}
+   */
   vector<Move> get_moves() const;
 
+  /**
+   * Turn the vector of cars into a 2D array where each spot represents either -1 for an empty space or n >= 0 for
+   * the index of the car in the vector.
+   */
   void compute_parking();
 
+  /**
+   * Makes the parking completely empty.
+   */
   void reset_parking();
 };
 
