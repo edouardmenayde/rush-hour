@@ -50,7 +50,10 @@ Generator::Generator(uint8_t d, string &p) : difficulty_level(d), output_path(p)
       range = Range{30, 40};
       break;
     }
-    default:break;
+    default:
+      perror("Illegal difficulty level.");
+      exit(EXIT_FAILURE);
+      break;
   }
 
   cout << "Generating puzzle with " << (int) number_of_cars << " cars and between " << range.start << " and " << range

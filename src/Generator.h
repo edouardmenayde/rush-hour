@@ -8,7 +8,7 @@
 using namespace std;
 
 /**
- * Values authorized between the start and the end included
+ * Values authorized between `start` and `end` both included.
  */
 class Range {
  public:
@@ -21,6 +21,9 @@ class Range {
   bool is_between(int m);
 };
 
+/**
+ * Generates one or more situation fitting constraint for the selected level (between 1 and 4 included).
+ */
 class Generator {
  public:
   mt19937 random_generator;
